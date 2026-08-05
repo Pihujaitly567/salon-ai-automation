@@ -4,27 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salon Intelligence Hub</title>
-    <!-- Google Fonts: Elegant Luxury Serif & Editorial Sans -->
+    <!-- Google Fonts: Luxury Serif & Modern Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-salon: #faf9f6; /* Linen Off-White */
-            --bg-card: #ffffff; /* Ivory Card */
-            --border-gold: rgba(197, 168, 128, 0.22); /* Soft Champagne Gold Frame */
-            --accent-gold: #bfa37c; /* Luxury Gold */
-            --accent-gold-glow: rgba(191, 163, 124, 0.15);
-            --luxury-green: #4a6b53; /* Sage/Emerald Green */
-            --luxury-green-glow: rgba(74, 107, 83, 0.15);
-            --luxury-rose: #c68b7a; /* Terracotta Rose Gold */
-            --luxury-rose-glow: rgba(198, 139, 122, 0.15);
-            --text-dark: #282624; /* Deep Charcoal */
-            --text-muted: #78726a; /* Soft Warm Gray */
-            --border-radius: 20px;
-            --shadow-premium: 0 10px 30px -5px rgba(120, 114, 106, 0.08);
-            --shadow-hover: 0 20px 40px -10px rgba(191, 163, 124, 0.18);
+            --bg-salon: #fcfaf7;
+            --bg-card: #ffffff;
+            --border-salon: #ebdcd0;
+            --accent-gold: #c5a880;
+            --accent-gold-glow: rgba(197, 168, 128, 0.2);
+            --luxury-green: #4f6f52;
+            --luxury-green-glow: rgba(79, 111, 82, 0.15);
+            --luxury-rose: #d68c9f;
+            --luxury-rose-glow: rgba(214, 140, 159, 0.15);
+            --text-dark: #2d2a26;
+            --text-muted: #7d7873;
+            --border-radius: 16px;
         }
 
         * {
@@ -41,7 +39,6 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
-            letter-spacing: -0.1px;
         }
 
         /* Luxury Header */
@@ -49,10 +46,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 24px 60px;
-            background: rgba(250, 249, 246, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-gold);
+            padding: 24px 48px;
+            background: rgba(252, 250, 247, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-salon);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -65,18 +62,18 @@
         }
 
         .brand-icon {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             background-color: var(--accent-gold);
             border-radius: 50%;
-            box-shadow: 0 0 12px var(--accent-gold);
-            animation: pulse-gold 3s infinite ease-in-out;
+            box-shadow: 0 0 10px var(--accent-gold);
+            animation: pulse-gold 2.5s infinite ease-in-out;
         }
 
         @keyframes pulse-gold {
-            0% { transform: scale(0.95); opacity: 0.6; }
-            50% { transform: scale(1.25); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.6; }
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
         }
 
         h1 {
@@ -84,94 +81,61 @@
             font-size: 26px;
             font-weight: 700;
             color: var(--text-dark);
-            letter-spacing: -0.3px;
+            letter-spacing: -0.2px;
         }
 
-        /* Tabs Navigation */
-        .tabs-nav {
+        .active-status {
             display: flex;
-            gap: 6px;
-            background: #ede8e2;
-            padding: 4px;
+            align-items: center;
+            gap: 8px;
+            background: var(--luxury-green-glow);
+            border: 1px solid rgba(79, 111, 82, 0.2);
+            padding: 8px 16px;
             border-radius: 30px;
-            border: 1px solid var(--border-gold);
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px 22px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 13px;
             font-weight: 600;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: var(--luxury-green);
+            letter-spacing: 0.3px;
         }
 
-        .tab-btn:hover {
-            color: var(--text-dark);
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--luxury-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--luxury-green);
         }
 
-        .tab-btn.active {
-            background: #ffffff;
-            color: var(--text-dark);
-            box-shadow: 0 4px 15px rgba(120, 114, 106, 0.08);
-        }
-
-        /* Dashboard Container */
+        /* Dashboard Main Layout */
         .dashboard-container {
-            padding: 40px 60px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 36px;
+            padding: 40px 48px;
+            flex-grow: 1;
             max-width: 1800px;
             margin: 0 auto;
             width: 100%;
-            flex-grow: 1;
         }
 
-        /* View Panels */
-        .view-panel {
-            display: none;
+        /* Left Side: Video Monitor */
+        .monitor-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
-        .view-panel.active {
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Common Grid Layouts */
-        .grid-layout {
-            display: grid;
-            grid-template-columns: 1.25fr 0.75fr;
-            gap: 40px;
-        }
-
-        @media (max-width: 1200px) {
-            .grid-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Premium Cards */
         .card {
             background: var(--bg-card);
-            border: 1px solid var(--border-gold);
+            border: 1px solid var(--border-salon);
             border-radius: var(--border-radius);
-            padding: 30px;
-            box-shadow: var(--shadow-premium);
-            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-            margin-bottom: 30px;
+            padding: 28px;
+            box-shadow: 0 4px 20px rgba(45, 42, 38, 0.04);
+            transition: all 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-            border-color: rgba(191, 163, 124, 0.4);
+            box-shadow: 0 6px 30px rgba(45, 42, 38, 0.07);
         }
 
         .card-header {
@@ -179,7 +143,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            border-bottom: 1px solid #f2ede7;
+            border-bottom: 1px solid #f5ede6;
             padding-bottom: 12px;
         }
 
@@ -188,29 +152,26 @@
             font-size: 20px;
             font-weight: 700;
             color: var(--text-dark);
-            letter-spacing: -0.2px;
         }
 
         .card-subtitle {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
-        /* Camera Frame */
         .camera-feed-box {
             width: 100%;
-            background: #faf9f6;
-            border-radius: 14px;
+            background: #fdfcfb;
+            border-radius: 12px;
             overflow: hidden;
-            border: 1px solid var(--border-gold);
+            border: 1px solid var(--border-salon);
             aspect-ratio: 4/3;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: inset 0 2px 10px rgba(120, 114, 106, 0.03);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
         }
 
         .camera-feed-box img {
@@ -219,63 +180,73 @@
             object-fit: contain;
         }
 
-        /* KPI Grid */
+        /* Right Side: Stats Panel */
+        .analytics-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* KPIs Grid */
         .kpi-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         .kpi-box {
             background: var(--bg-card);
-            border: 1px solid var(--border-gold);
+            border: 1px solid var(--border-salon);
             border-radius: var(--border-radius);
-            padding: 24px 28px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 8px;
             position: relative;
-            box-shadow: var(--shadow-premium);
-            transition: all 0.3s ease;
-        }
-
-        .kpi-box:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
+            box-shadow: 0 4px 20px rgba(45, 42, 38, 0.03);
         }
 
         .kpi-box::after {
             content: '';
             position: absolute;
             bottom: 0;
-            left: 28px;
-            right: 28px;
+            left: 24px;
+            right: 24px;
             height: 3px;
             border-radius: 3px 3px 0 0;
             background: var(--accent-gold);
         }
 
-        .kpi-box.total-traffic::after { background: var(--luxury-green); }
-        .kpi-box.occupancy::after { background: var(--luxury-rose); }
-        .kpi-box.active-staff::after { background: var(--accent-gold); }
+        .kpi-box.entries::after {
+            background: var(--luxury-green);
+        }
+
+        .kpi-box.barbers::after {
+            background: var(--accent-gold);
+        }
 
         .kpi-title {
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 12px;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.8px;
         }
 
         .kpi-val {
-            font-size: 34px;
+            font-size: 36px;
             font-weight: 700;
             color: var(--text-dark);
             font-family: 'Playfair Display', serif;
         }
 
-        /* Station row */
+        /* Stations Grid */
+        .stations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
         .station-row {
             display: flex;
             align-items: center;
@@ -283,19 +254,14 @@
             padding: 18px 24px;
             background: #faf8f5;
             border: 1px solid #f3eae1;
-            border-radius: 14px;
-            margin-bottom: 14px;
-            transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-
-        .station-row:last-child {
-            margin-bottom: 0;
+            border-radius: 12px;
+            transition: all 0.25s ease;
         }
 
         .station-row:hover {
-            background: #f6f1ea;
-            transform: translateX(4px);
-            box-shadow: 0 4px 15px rgba(191, 163, 124, 0.05);
+            background: #f7f3ed;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(197, 168, 128, 0.08);
         }
 
         .station-info {
@@ -305,14 +271,26 @@
         }
 
         .station-dot {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
+            box-shadow: 0 0 6px rgba(0,0,0,0.05);
         }
 
-        .status-vacant { background-color: var(--luxury-green); box-shadow: 0 0 10px rgba(74, 107, 83, 0.4); }
-        .status-occupied { background-color: var(--luxury-rose); box-shadow: 0 0 10px rgba(198, 139, 122, 0.5); }
-        .status-claimed { background-color: var(--accent-gold); box-shadow: 0 0 10px rgba(191, 163, 124, 0.5); }
+        .status-vacant {
+            background-color: var(--luxury-green);
+            box-shadow: 0 0 10px rgba(79, 111, 82, 0.3);
+        }
+
+        .status-occupied {
+            background-color: var(--luxury-rose);
+            box-shadow: 0 0 10px rgba(214, 140, 159, 0.4);
+        }
+
+        .status-claimed {
+            background-color: var(--accent-gold);
+            box-shadow: 0 0 10px rgba(197, 168, 128, 0.4);
+        }
 
         .station-title {
             font-family: 'Playfair Display', serif;
@@ -330,18 +308,18 @@
 
         .station-stats {
             display: flex;
-            gap: 28px;
+            gap: 32px;
         }
 
         .stat-col {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 4px;
         }
 
         .stat-lbl {
-            font-size: 9px;
-            font-weight: 700;
+            font-size: 10px;
+            font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.6px;
@@ -353,29 +331,31 @@
             color: var(--text-dark);
         }
 
-        .stat-val.active-time { color: var(--luxury-rose); }
+        .stat-val.active-time {
+            color: var(--luxury-rose);
+        }
 
-        /* Barber Card / Staff Card */
+        /* Barber Profile Tracker */
+        .barber-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
         .barber-card {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 16px 20px;
             background: #ffffff;
-            border: 1px solid var(--border-gold);
-            border-radius: 14px;
-            margin-bottom: 12px;
-            transition: all 0.25s ease;
+            border: 1px solid var(--border-salon);
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
 
         .barber-card:hover {
             border-color: var(--accent-gold);
-            background: #faf9f6;
-            transform: translateX(2px);
-        }
-
-        .barber-card:last-child {
-            margin-bottom: 0;
+            background: #faf8f5;
         }
 
         .barber-meta {
@@ -385,8 +365,8 @@
         }
 
         .barber-pic {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             background: #efe4da;
             color: var(--text-dark);
             border-radius: 50%;
@@ -394,7 +374,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 14px;
             border: 1.5px solid var(--accent-gold);
             font-family: 'Playfair Display', serif;
         }
@@ -406,172 +386,63 @@
         }
 
         .barber-info p {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 500;
         }
 
         .barber-badge {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 700;
             padding: 5px 10px;
             border-radius: 30px;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
         }
 
-        .barber-badge.idle { background: #f0ede9; color: var(--text-muted); }
-        .barber-badge.servicing { background: var(--luxury-green-glow); color: var(--luxury-green); }
-        .barber-badge.moving, .barber-badge.returning { background: rgba(191, 163, 124, 0.12); color: var(--accent-gold); }
+        .barber-badge.idle {
+            background: #f0ede9;
+            color: var(--text-muted);
+            border: 1px solid #e0dad3;
+        }
+
+        .barber-badge.servicing {
+            background: var(--luxury-green-glow);
+            color: var(--luxury-green);
+            border: 1px solid rgba(79, 111, 82, 0.2);
+        }
+
+        .barber-badge.moving, .barber-badge.returning {
+            background: rgba(197, 168, 128, 0.12);
+            color: var(--accent-gold);
+            border: 1px solid rgba(197, 168, 128, 0.25);
+        }
 
         .barber-clock {
             font-size: 14px;
             font-weight: 700;
             color: var(--accent-gold);
-        }
-
-        /* --- GLOBAL OVERVIEW LAYOUT --- */
-        .global-grid {
-            display: grid;
-            grid-template-columns: 1.15fr 0.85fr;
-            gap: 40px;
-        }
-
-        @media (max-width: 1200px) {
-            .global-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Stations Grid Quick Overview */
-        .global-stations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 20px;
-        }
-
-        .global-station-card {
-            background: #faf8f5;
-            border: 1px solid #f3eae1;
-            border-radius: 14px;
-            padding: 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .global-station-card:hover {
-            transform: translateY(-2px);
-            background: #f6f1ea;
-            border-color: var(--accent-gold);
-            box-shadow: 0 4px 15px rgba(191, 163, 124, 0.06);
-        }
-
-        .global-station-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .global-station-name {
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
-            font-size: 16px;
-            margin-top: 6px;
-        }
-
-        .global-station-room {
-            font-size: 9px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 700;
-        }
-
-        .global-station-status {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 20px;
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .status-badge-vacant { background: var(--luxury-green-glow); color: var(--luxury-green); }
-        .status-badge-occupied { background: var(--luxury-rose-glow); color: var(--luxury-rose); }
-
-        /* --- PRODUCTIVITY / UTILIZATION CHART WIDGET --- */
-        .utilization-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .utilization-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .utilization-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-        }
-
-        .utilization-name {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .utilization-stats-label {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .utilization-percent {
-            font-weight: 700;
-            color: var(--accent-gold);
             font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        .progress-track {
-            width: 100%;
-            height: 10px;
-            background: #ede8e2;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(197, 168, 128, 0.1);
-        }
-
-        .progress-bar {
-            height: 100%;
-            border-radius: 10px;
-            width: 0%;
-            background: linear-gradient(90deg, var(--accent-gold) 0%, var(--luxury-green) 100%);
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Footer */
         footer {
             text-align: center;
             padding: 30px;
-            border-top: 1px solid var(--border-gold);
-            font-size: 11px;
+            border-top: 1px solid var(--border-salon);
+            font-size: 12px;
             color: var(--text-muted);
-            background: #fbf9f6;
             margin-top: auto;
-            letter-spacing: 0.6px;
-            font-weight: 500;
+            background: #fbf9f6;
+            letter-spacing: 0.4px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1150px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                padding: 24px;
+                gap: 24px;
+            }
         }
     </style>
 </head>
@@ -582,331 +453,110 @@
             <div class="brand-icon"></div>
             <h1>Salon Intelligence Hub</h1>
         </div>
-        
-        <!-- Navigation Tabs -->
-        <div class="tabs-nav">
-            <button class="tab-btn active" onclick="switchView('global')">Global Overview</button>
-            <button class="tab-btn" onclick="switchView('main')">Cam 01: Styling Lounge</button>
-            <button class="tab-btn" onclick="switchView('spa')">Cam 02: Spa & Therapy</button>
+        <div class="active-status">
+            <div class="status-dot"></div>
+            <span>Live Video Analytics</span>
         </div>
     </header>
 
     <div class="dashboard-container">
-        
-        <!-- Global Aggregates (Always visible on top) -->
-        <div class="kpi-row">
-            <div class="kpi-box total-traffic">
-                <span class="kpi-title">Global Salon Traffic</span>
-                <span class="kpi-val" id="global-entries">0</span>
-            </div>
-            <div class="kpi-box active-staff">
-                <span class="kpi-title">Active Staff On Duty</span>
-                <span class="kpi-val" id="global-staff">0</span>
-            </div>
-            <div class="kpi-box occupancy">
-                <span class="kpi-title">Global Occupancy Rate</span>
-                <span class="kpi-val" id="global-occupancy">0%</span>
-            </div>
-            <div class="kpi-box station-ratio">
-                <span class="kpi-title">Stations Busy</span>
-                <span class="kpi-val" id="global-ratio">0 / 0</span>
-            </div>
-        </div>
-
-        <!-- ================= VIEW 1: GLOBAL OVERVIEW ================= -->
-        <div id="panel-global" class="view-panel active">
-            <div class="global-grid">
-                
-                <!-- Quick Station Grid -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">Live Stations Overview</span>
-                        <span class="card-subtitle">All Rooms Status</span>
-                    </div>
-                    <div class="global-stations-grid" id="global-stations-container">
-                        <!-- Populated dynamically -->
-                    </div>
+        <!-- Left Side: Camera Monitoring -->
+        <div class="monitor-panel">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Live Tracking Camera Feed</span>
+                    <span class="card-subtitle">CAMERA_01 // HIGH PRECISION REGIONS</span>
                 </div>
-                
-                <!-- Right column: Team utilization progress bars -->
-                <div>
-                    <!-- Utilization Chart Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Staff Utilization</span>
-                            <span class="card-subtitle">Shift Active Workrate %</span>
-                        </div>
-                        <div class="utilization-list" id="utilization-container">
-                            <!-- Utilization bars populated dynamically -->
-                        </div>
-                    </div>
-
-                    <!-- Comprehensive Staff Ledger -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Active Staff Ledger</span>
-                            <span class="card-subtitle">Global Team Roster</span>
-                        </div>
-                        <div id="global-staff-container">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- ================= VIEW 2: MAIN STYLING LOUNGE ================= -->
-        <div id="panel-main" class="view-panel">
-            <div class="grid-layout">
-                <!-- Video Monitor -->
-                <div class="monitor-panel">
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Main Styling Lounge Stream</span>
-                            <span class="card-subtitle">CAMERA_01 // YOLOv8 Live Inference</span>
-                        </div>
-                        <div class="camera-feed-box">
-                            <img src="/video_feed/main" alt="Main Salon Camera Feed">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Metrics -->
-                <div>
-                    <!-- Station Cards -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Styling Chairs</span>
-                            <span class="card-subtitle">Zone-based metrics</span>
-                        </div>
-                        <div id="main-stations-container">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-                    
-                    <!-- Stylist Ledger -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Stylist Activity</span>
-                            <span class="card-subtitle">Alex, Jordan, Taylor</span>
-                        </div>
-                        <div id="main-barbers-container">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
+                <div class="camera-feed-box">
+                    <img src="/video_feed" alt="Salon Video Processing Feed">
                 </div>
             </div>
         </div>
 
-        <!-- ================= VIEW 3: SPA & THERAPY ROOM ================= -->
-        <div id="panel-spa" class="view-panel">
-            <div class="grid-layout">
-                <!-- Video Monitor -->
-                <div class="monitor-panel">
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Spa & Therapy Room Stream</span>
-                            <span class="card-subtitle">CAMERA_02 // Simulated Layout Tracking</span>
-                        </div>
-                        <div class="camera-feed-box">
-                            <img src="/video_feed/spa" alt="Spa Room Simulated Camera Feed">
-                        </div>
+        <!-- Right Side: Metrics & Dashboards -->
+        <div class="analytics-panel">
+            <!-- Entry and Barber KPIs -->
+            <div class="kpi-row">
+                <div class="kpi-box entries">
+                    <span class="kpi-title">Total Entries</span>
+                    <span class="kpi-val" id="entries-count">0</span>
+                </div>
+                <div class="kpi-box barbers">
+                    <span class="kpi-title">Active Stylists</span>
+                    <span class="kpi-val" id="barber-count">3</span>
+                </div>
+            </div>
+
+            <!-- Stylist Stations -->
+            <div class="card">
+                <div class="card-header" style="margin-bottom: 18px;">
+                    <span class="card-title" style="font-size: 18px;">Styling Stations</span>
+                </div>
+                <div class="stations-list" id="stations-container">
+                    <!-- Updated dynamically -->
+                </div>
+            </div>
+
+            <!-- Waiting Lounge Registry -->
+            <div class="card">
+                <div class="card-header" style="margin-bottom: 18px;">
+                    <span class="card-title" style="font-size: 18px;">Waiting Lounge Registry</span>
+                    <span class="card-subtitle">Live Queue & Wait Times</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #faf8f5; border: 1px solid #f3eae1; padding: 12px; border-radius: 10px; text-align: center;">
+                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Currently Waiting</span>
+                        <div style="font-size: 22px; font-weight: 700; font-family: 'Playfair Display', serif;" id="waiting-count">0</div>
+                    </div>
+                    <div style="background: #faf8f5; border: 1px solid #f3eae1; padding: 12px; border-radius: 10px; text-align: center;">
+                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Avg Wait Time</span>
+                        <div style="font-size: 22px; font-weight: 700; font-family: 'Playfair Display', serif;" id="waiting-avg">0s</div>
                     </div>
                 </div>
-                
-                <!-- Metrics -->
-                <div>
-                    <!-- Station Cards -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Massage Tables</span>
-                            <span class="card-subtitle">Zone-based metrics</span>
-                        </div>
-                        <div id="spa-stations-container">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-                    
-                    <!-- Therapist Ledger -->
-                    <div class="card">
-                        <div class="card-header">
-                            <span class="card-title">Therapist Activity</span>
-                            <span class="card-subtitle">Morgan, Casey</span>
-                        </div>
-                        <div id="spa-barbers-container">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
+                <div class="barber-grid" id="waiting-container">
+                    <!-- Queue items updated dynamically -->
+                </div>
+            </div>
+
+            <!-- Barber Service Timers -->
+            <div class="card">
+                <div class="card-header" style="margin-bottom: 18px;">
+                    <span class="card-title" style="font-size: 18px;">Stylist Activity Ledger</span>
+                </div>
+                <div class="barber-grid" id="barbers-container">
+                    <!-- Updated dynamically -->
                 </div>
             </div>
         </div>
-
     </div>
 
     <footer>
-        Salon Intelligence Hub &copy; 2026 | Multi-Room Video Analytics Platform PoC
+        Salon Intelligence Hub &copy; 2026 | Powered by Computer Vision & Space Analytics PoC
     </footer>
 
     <script>
-        // View Swapper
-        function switchView(viewName) {
-            // Update Active Buttons
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // Highlight clicked button
-            const clickedBtn = Array.from(buttons).find(btn => btn.innerText.toLowerCase().includes(viewName.toLowerCase()));
-            if (clickedBtn) clickedBtn.classList.add('active');
-            
-            // Toggle view visibility
-            const panels = document.querySelectorAll('.view-panel');
-            panels.forEach(p => p.classList.remove('active'));
-            document.getElementById(`panel-${viewName}`).classList.add('active');
-        }
-
-        // Live Poller
-        function refreshData() {
+        function updateDashboard() {
             fetch('/api/data')
                 .then(response => response.json())
                 .then(data => {
-                    const uptime = data.global.uptime || 1; // Prevent division by zero
+                    // Update header totals
+                    document.getElementById('entries-count').innerText = data.total_entries;
+                    document.getElementById('barber-count').innerText = data.active_barbers_count;
 
-                    // 1. Update Global Header Stats
-                    document.getElementById('global-entries').innerText = data.global.total_entries;
-                    document.getElementById('global-staff').innerText = data.global.active_staff;
-                    document.getElementById('global-occupancy').innerText = data.global.occupancy_rate + '%';
-                    document.getElementById('global-ratio').innerText = `${data.global.total_busy_stations} / ${data.global.total_stations}`;
+                    // Update styling stations list
+                    const stationsContainer = document.getElementById('stations-container');
+                    stationsContainer.innerHTML = '';
 
-                    // 2. Global View: Station Grid
-                    const globalStationsContainer = document.getElementById('global-stations-container');
-                    globalStationsContainer.innerHTML = '';
-                    
-                    // Main Lounge Chairs
-                    Object.keys(data.rooms.main.chairs).forEach(cid => {
-                        const chair = data.rooms.main.chairs[cid];
-                        const isOccupied = chair.status === 'Occupied';
-                        const dotClass = isOccupied ? 'status-occupied' : 'status-vacant';
-                        const badgeClass = isOccupied ? 'status-badge-occupied' : 'status-badge-vacant';
+                    Object.keys(data.chairs).forEach(cid => {
+                        const chair = data.chairs[cid];
                         
-                        const element = `
-                            <div class="global-station-card">
-                                <div class="global-station-badge ${dotClass}"></div>
-                                <div class="global-station-room">Styling Lounge</div>
-                                <div class="global-station-name">Station 0${cid}</div>
-                                <span class="global-station-status ${badgeClass}">${chair.status}</span>
-                            </div>
-                        `;
-                        globalStationsContainer.insertAdjacentHTML('beforeend', element);
-                    });
-
-                    // Spa Tables
-                    Object.keys(data.rooms.spa.chairs).forEach(cid => {
-                        const table = data.rooms.spa.chairs[cid];
-                        const isOccupied = table.status === 'Occupied';
-                        const dotClass = isOccupied ? 'status-occupied' : 'status-vacant';
-                        const badgeClass = isOccupied ? 'status-badge-occupied' : 'status-badge-vacant';
-                        
-                        const element = `
-                            <div class="global-station-card">
-                                <div class="global-station-badge ${dotClass}"></div>
-                                <div class="global-station-room">Spa & Therapy</div>
-                                <div class="global-station-name">Table 0${cid}</div>
-                                <span class="global-station-status ${badgeClass}">${table.status}</span>
-                            </div>
-                        `;
-                        globalStationsContainer.insertAdjacentHTML('beforeend', element);
-                    });
-
-                    // 3. Global View: Staff ledger
-                    const globalStaffContainer = document.getElementById('global-staff-container');
-                    globalStaffContainer.innerHTML = '';
-
-                    // Main Room Staff
-                    Object.keys(data.rooms.main.barbers).forEach(bid => {
-                        const staff = data.rooms.main.barbers[bid];
-                        const statusClass = staff.status.toLowerCase();
-                        const element = `
-                            <div class="barber-card">
-                                <div class="barber-meta">
-                                    <div class="barber-pic">${staff.name[0]}</div>
-                                    <div class="barber-info">
-                                        <h4>${staff.name}</h4>
-                                        <p>Styling Lounge // ${staff.status === 'Servicing' ? 'At Station 0' + staff.current_chair : 'Waiting'}</p>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 20px;">
-                                    <span class="barber-badge ${statusClass}">${staff.status}</span>
-                                    <span class="barber-clock">${staff.total_service_time}s</span>
-                                </div>
-                            </div>
-                        `;
-                        globalStaffContainer.insertAdjacentHTML('beforeend', element);
-                    });
-
-                    // Spa Room Staff
-                    Object.keys(data.rooms.spa.barbers).forEach(bid => {
-                        const staff = data.rooms.spa.barbers[bid];
-                        const statusClass = staff.status.toLowerCase();
-                        const element = `
-                            <div class="barber-card">
-                                <div class="barber-meta">
-                                    <div class="barber-pic">${staff.name[0]}</div>
-                                    <div class="barber-info">
-                                        <h4>${staff.name}</h4>
-                                        <p>Spa & Therapy // ${staff.status === 'Servicing' ? 'At Table 0' + staff.current_chair : 'Waiting'}</p>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 20px;">
-                                    <span class="barber-badge ${statusClass}">${staff.status}</span>
-                                    <span class="barber-clock">${staff.total_service_time}s</span>
-                                </div>
-                            </div>
-                        `;
-                        globalStaffContainer.insertAdjacentHTML('beforeend', element);
-                    });
-
-                    // 4. Staff Utilization progress bars
-                    const utilizationContainer = document.getElementById('utilization-container');
-                    utilizationContainer.innerHTML = '';
-
-                    const renderUtilization = (staff, dept) => {
-                        const utilPercent = Math.min(Math.round((staff.total_service_time / uptime) * 100), 100);
-                        const progressRow = `
-                            <div class="utilization-item">
-                                <div class="utilization-meta">
-                                    <span class="utilization-name">${staff.name.split(' ')[0]} <span class="utilization-stats-label">(${dept})</span></span>
-                                    <span>
-                                        <span class="utilization-stats-label">${staff.total_service_time}s active / </span>
-                                        <span class="utilization-percent">${utilPercent}%</span>
-                                    </span>
-                                </div>
-                                <div class="progress-track">
-                                    <div class="progress-bar" style="width: ${utilPercent}%;"></div>
-                                </div>
-                            </div>
-                        `;
-                        utilizationContainer.insertAdjacentHTML('beforeend', progressRow);
-                    };
-
-                    Object.keys(data.rooms.main.barbers).forEach(bid => {
-                        renderUtilization(data.rooms.main.barbers[bid], 'Stylist');
-                    });
-                    Object.keys(data.rooms.spa.barbers).forEach(bid => {
-                        renderUtilization(data.rooms.spa.barbers[bid], 'Spa');
-                    });
-
-                    // 5. Main Room: Stations & Barbers
-                    const mainStationsContainer = document.getElementById('main-stations-container');
-                    mainStationsContainer.innerHTML = '';
-                    Object.keys(data.rooms.main.chairs).forEach(cid => {
-                        const chair = data.rooms.main.chairs[cid];
                         let dotClass = 'status-vacant';
                         if (chair.status === 'Occupied') dotClass = 'status-occupied';
                         if (chair.status === 'Claimed') dotClass = 'status-claimed';
-                        const durStr = chair.status === 'Occupied' ? `${chair.current_duration}s` : '--';
-                        
-                        const row = `
+
+                        const durationStr = chair.status === 'Occupied' ? `${chair.current_duration}s` : '--';
+
+                        const stationRow = `
                             <div class="station-row">
                                 <div class="station-info">
                                     <div class="station-dot ${dotClass}"></div>
@@ -918,7 +568,7 @@
                                 <div class="station-stats">
                                     <div class="stat-col">
                                         <span class="stat-lbl">Active Time</span>
-                                        <span class="stat-val ${chair.status === 'Occupied' ? 'active-time' : ''}">${durStr}</span>
+                                        <span class="stat-val ${chair.status === 'Occupied' ? 'active-time' : ''}">${durationStr}</span>
                                     </div>
                                     <div class="stat-col">
                                         <span class="stat-lbl">Avg Duration</span>
@@ -931,100 +581,80 @@
                                 </div>
                             </div>
                         `;
-                        mainStationsContainer.insertAdjacentHTML('beforeend', row);
+                        stationsContainer.insertAdjacentHTML('beforeend', stationRow);
                     });
 
-                    const mainBarbersContainer = document.getElementById('main-barbers-container');
-                    mainBarbersContainer.innerHTML = '';
-                    Object.keys(data.rooms.main.barbers).forEach(bid => {
-                        const staff = data.rooms.main.barbers[bid];
-                        const statusClass = staff.status.toLowerCase();
-                        const element = `
-                            <div class="barber-card">
-                                <div class="barber-meta">
-                                    <div class="barber-pic">${staff.name[0]}</div>
-                                    <div class="barber-info">
-                                        <h4>${staff.name}</h4>
-                                        <p>${staff.status === 'Servicing' ? 'Working @ Station 0' + staff.current_chair : 'Idle'}</p>
+                    // Update Waiting Lounge Registry
+                    document.getElementById('waiting-count').innerText = data.waiting.count;
+                    document.getElementById('waiting-avg').innerText = `${data.waiting.avg_wait_time}s`;
+
+                    const waitingContainer = document.getElementById('waiting-container');
+                    waitingContainer.innerHTML = '';
+
+                    if (data.waiting.queue.length === 0) {
+                        waitingContainer.innerHTML = '<p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 10px;">No clients currently waiting</p>';
+                    } else {
+                        data.waiting.queue.forEach(item => {
+                            const clientRow = `
+                                <div class="barber-card" style="border-color: rgba(191, 163, 124, 0.15); margin-bottom: 8px; padding: 12px 16px;">
+                                    <div class="barber-meta">
+                                        <div class="barber-pic" style="background: #efe4da; border-color: var(--accent-gold); width: 32px; height: 32px; font-size: 11px;">C</div>
+                                        <div class="barber-info">
+                                            <h4 style="font-size: 13px;">Client #${item.client_id}</h4>
+                                            <p style="font-size: 10px;">Waiting in lounge</p>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <span class="barber-badge idle" style="background: rgba(191, 163, 124, 0.1); color: var(--accent-gold); border: 1px solid rgba(191, 163, 124, 0.15); font-size: 9px; padding: 3px 8px;">Waiting</span>
+                                        <span class="barber-clock" style="font-size: 13px;">${item.duration}s</span>
                                     </div>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 20px;">
-                                    <span class="barber-badge ${statusClass}">${staff.status}</span>
-                                    <span class="barber-clock">${staff.total_service_time}s</span>
-                                </div>
-                            </div>
-                        `;
-                        mainBarbersContainer.insertAdjacentHTML('beforeend', element);
-                    });
+                            `;
+                            waitingContainer.insertAdjacentHTML('beforeend', clientRow);
+                        });
+                    }
 
-                    // 6. Spa Room: Stations & Barbers
-                    const spaStationsContainer = document.getElementById('spa-stations-container');
-                    spaStationsContainer.innerHTML = '';
-                    Object.keys(data.rooms.spa.chairs).forEach(cid => {
-                        const table = data.rooms.spa.chairs[cid];
-                        let dotClass = 'status-vacant';
-                        if (table.status === 'Occupied') dotClass = 'status-occupied';
-                        if (table.status === 'Claimed') dotClass = 'status-claimed';
-                        const durStr = table.status === 'Occupied' ? `${table.current_duration}s` : '--';
+                    // Update Barber lists
+                    const barbersContainer = document.getElementById('barbers-container');
+                    barbersContainer.innerHTML = '';
+
+                    Object.keys(data.barbers).forEach(bid => {
+                        const barber = data.barbers[bid];
+                        const nameParts = barber.name.split(' ');
+                        const shortName = nameParts[0]; // Alex, Jordan, Taylor
+                        const statusClass = barber.status.toLowerCase();
                         
-                        const row = `
-                            <div class="station-row">
-                                <div class="station-info">
-                                    <div class="station-dot ${dotClass}"></div>
-                                    <div>
-                                        <div class="station-title">Table 0${cid}</div>
-                                        <div class="station-desc">${table.status}</div>
-                                    </div>
-                                </div>
-                                <div class="station-stats">
-                                    <div class="stat-col">
-                                        <span class="stat-lbl">Active Time</span>
-                                        <span class="stat-val ${table.status === 'Occupied' ? 'active-time' : ''}">${durStr}</span>
-                                    </div>
-                                    <div class="stat-col">
-                                        <span class="stat-lbl">Avg Duration</span>
-                                        <span class="stat-val">${table.average_duration}s</span>
-                                    </div>
-                                    <div class="stat-col">
-                                        <span class="stat-lbl">Clients</span>
-                                        <span class="stat-val">${table.total_services}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        spaStationsContainer.insertAdjacentHTML('beforeend', row);
-                    });
+                        let taskDescription = 'Idle';
+                        if (barber.status === 'Servicing') {
+                            taskDescription = `Servicing Station 0${barber.current_chair}`;
+                        } else if (barber.status === 'Moving' || barber.status === 'Returning') {
+                            taskDescription = `Transit to Station 0${barber.current_chair || ''}`;
+                        }
 
-                    const spaBarbersContainer = document.getElementById('spa-barbers-container');
-                    spaBarbersContainer.innerHTML = '';
-                    Object.keys(data.rooms.spa.barbers).forEach(bid => {
-                        const staff = data.rooms.spa.barbers[bid];
-                        const statusClass = staff.status.toLowerCase();
-                        const element = `
+                        const barberCard = `
                             <div class="barber-card">
                                 <div class="barber-meta">
-                                    <div class="barber-pic">${staff.name[0]}</div>
+                                    <div class="barber-pic">${shortName[0]}</div>
                                     <div class="barber-info">
-                                        <h4>${staff.name}</h4>
-                                        <p>${staff.status === 'Servicing' ? 'Working @ Table 0' + staff.current_chair : 'Idle'}</p>
+                                        <h4>${barber.name}</h4>
+                                        <p>${taskDescription}</p>
                                     </div>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 20px;">
-                                    <span class="barber-badge ${statusClass}">${staff.status}</span>
-                                    <span class="barber-clock">${staff.total_service_time}s</span>
+                                    <span class="barber-badge ${statusClass}">${barber.status}</span>
+                                    <span class="barber-clock">${barber.total_service_time}s</span>
                                 </div>
                             </div>
                         `;
-                        spaBarbersContainer.insertAdjacentHTML('beforeend', element);
+                        barbersContainer.insertAdjacentHTML('beforeend', barberCard);
                     });
-
                 })
-                .catch(error => console.error('Error polling dashboard data:', error));
+                .catch(error => console.error('Error fetching data:', error));
         }
 
-        // Poll every 500ms
-        setInterval(refreshData, 500);
-        refreshData();
+        // Poll API every 500ms
+        setInterval(updateDashboard, 500);
+        updateDashboard();
     </script>
 </body>
 </html>
