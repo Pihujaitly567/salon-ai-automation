@@ -4,447 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salon Intelligence Hub</title>
-    <!-- Google Fonts: Luxury Serif & Modern Sans -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg-salon: #fcfaf7;
-            --bg-card: #ffffff;
-            --border-salon: #ebdcd0;
-            --accent-gold: #c5a880;
-            --accent-gold-glow: rgba(197, 168, 128, 0.2);
-            --luxury-green: #4f6f52;
-            --luxury-green-glow: rgba(79, 111, 82, 0.15);
-            --luxury-rose: #d68c9f;
-            --luxury-rose-glow: rgba(214, 140, 159, 0.15);
-            --text-dark: #2d2a26;
-            --text-muted: #7d7873;
-            --border-radius: 16px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-salon);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
-
-        /* Luxury Header */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 48px;
-            background: rgba(252, 250, 247, 0.95);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--border-salon);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .brand-icon {
-            width: 14px;
-            height: 14px;
-            background-color: var(--accent-gold);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent-gold);
-            animation: pulse-gold 2.5s infinite ease-in-out;
-        }
-
-        @keyframes pulse-gold {
-            0% { transform: scale(0.9); opacity: 0.7; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.7; }
-        }
-
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--text-dark);
-            letter-spacing: -0.2px;
-        }
-
-        .active-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--luxury-green-glow);
-            border: 1px solid rgba(79, 111, 82, 0.2);
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--luxury-green);
-            letter-spacing: 0.3px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--luxury-green);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--luxury-green);
-        }
-
-        /* Dashboard Main Layout */
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 36px;
-            padding: 40px 48px;
-            flex-grow: 1;
-            max-width: 1800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Left Side: Video Monitor */
-        .monitor-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-salon);
-            border-radius: var(--border-radius);
-            padding: 28px;
-            box-shadow: 0 4px 20px rgba(45, 42, 38, 0.04);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 6px 30px rgba(45, 42, 38, 0.07);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            border-bottom: 1px solid #f5ede6;
-            padding-bottom: 12px;
-        }
-
-        .card-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .card-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .camera-feed-box {
-            width: 100%;
-            background: #fdfcfb;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-salon);
-            aspect-ratio: 4/3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
-        }
-
-        .camera-feed-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* Right Side: Stats Panel */
-        .analytics-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 28px;
-        }
-
-        /* KPIs Grid */
-        .kpi-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .kpi-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-salon);
-            border-radius: var(--border-radius);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            position: relative;
-            box-shadow: 0 4px 20px rgba(45, 42, 38, 0.03);
-        }
-
-        .kpi-box::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 24px;
-            right: 24px;
-            height: 3px;
-            border-radius: 3px 3px 0 0;
-            background: var(--accent-gold);
-        }
-
-        .kpi-box.entries::after {
-            background: var(--luxury-green);
-        }
-
-        .kpi-box.barbers::after {
-            background: var(--accent-gold);
-        }
-
-        .kpi-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .kpi-val {
-            font-size: 36px;
-            font-weight: 700;
-            color: var(--text-dark);
-            font-family: 'Playfair Display', serif;
-        }
-
-        /* Stations Grid */
-        .stations-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .station-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 24px;
-            background: #faf8f5;
-            border: 1px solid #f3eae1;
-            border-radius: 12px;
-            transition: all 0.25s ease;
-        }
-
-        .station-row:hover {
-            background: #f7f3ed;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(197, 168, 128, 0.08);
-        }
-
-        .station-info {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .station-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            box-shadow: 0 0 6px rgba(0,0,0,0.05);
-        }
-
-        .status-vacant {
-            background-color: var(--luxury-green);
-            box-shadow: 0 0 10px rgba(79, 111, 82, 0.3);
-        }
-
-        .status-occupied {
-            background-color: var(--luxury-rose);
-            box-shadow: 0 0 10px rgba(214, 140, 159, 0.4);
-        }
-
-        .status-claimed {
-            background-color: var(--accent-gold);
-            box-shadow: 0 0 10px rgba(197, 168, 128, 0.4);
-        }
-
-        .station-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .station-desc {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 2px;
-            font-weight: 500;
-        }
-
-        .station-stats {
-            display: flex;
-            gap: 32px;
-        }
-
-        .stat-col {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .stat-lbl {
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-        }
-
-        .stat-val {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .stat-val.active-time {
-            color: var(--luxury-rose);
-        }
-
-        /* Barber Profile Tracker */
-        .barber-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .barber-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            background: #ffffff;
-            border: 1px solid var(--border-salon);
-            border-radius: 12px;
-            transition: all 0.2s ease;
-        }
-
-        .barber-card:hover {
-            border-color: var(--accent-gold);
-            background: #faf8f5;
-        }
-
-        .barber-meta {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .barber-pic {
-            width: 40px;
-            height: 40px;
-            background: #efe4da;
-            color: var(--text-dark);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            border: 1.5px solid var(--accent-gold);
-            font-family: 'Playfair Display', serif;
-        }
-
-        .barber-info h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .barber-info p {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .barber-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 10px;
-            border-radius: 30px;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        .barber-badge.idle {
-            background: #f0ede9;
-            color: var(--text-muted);
-            border: 1px solid #e0dad3;
-        }
-
-        .barber-badge.servicing {
-            background: var(--luxury-green-glow);
-            color: var(--luxury-green);
-            border: 1px solid rgba(79, 111, 82, 0.2);
-        }
-
-        .barber-badge.moving, .barber-badge.returning {
-            background: rgba(197, 168, 128, 0.12);
-            color: var(--accent-gold);
-            border: 1px solid rgba(197, 168, 128, 0.25);
-        }
-
-        .barber-clock {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--accent-gold);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px;
-            border-top: 1px solid var(--border-salon);
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: auto;
-            background: #fbf9f6;
-            letter-spacing: 0.4px;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1150px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-                padding: 24px;
-                gap: 24px;
-            }
-        }
-    </style>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ range(1, 10000) | random }}">
 </head>
 <body>
 
@@ -453,37 +18,67 @@
             <div class="brand-icon"></div>
             <h1>Salon Intelligence Hub</h1>
         </div>
-        <div class="active-status">
-            <div class="status-dot"></div>
-            <span>Live Video Analytics</span>
+        <div class="header-actions">
+            <button class="btn-luxury" onclick="openCalibrationModal()">
+                <span>📍</span> Calibrate & Rename Zones
+            </button>
+            <div class="active-status">
+                <div class="status-dot"></div>
+                <span>YOLOv8-Pose Dynamic AI Active</span>
+            </div>
         </div>
     </header>
 
-    <div class="dashboard-container">
+    <main class="dashboard-container">
         <!-- Left Side: Camera Monitoring -->
-        <div class="monitor-panel">
+        <section class="monitor-panel">
             <div class="card">
                 <div class="card-header">
                     <span class="card-title">Live Tracking Camera Feed</span>
-                    <span class="card-subtitle">CAMERA_01 // HIGH PRECISION REGIONS</span>
+                    <span class="card-subtitle" id="feed-meta">SKELETAL POSE ESTIMATION // 25 FPS</span>
                 </div>
+
+                <!-- Video Controls & Switcher -->
+                <div class="video-controls-bar">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Active Video:</span>
+                        <select class="select-video-dropdown" id="video-select" onchange="onVideoSelectChanged()">
+                            <!-- Dynamically populated -->
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="file" id="video-upload-input" accept="video/mp4" style="display: none;" onchange="onUploadVideo(event)">
+                        <button class="btn-luxury" onclick="document.getElementById('video-upload-input').click()">
+                            <span>⬆️</span> Upload Footage
+                        </button>
+                    </div>
+                </div>
+
                 <div class="camera-feed-box">
-                    <img src="/video_feed" alt="Salon Video Processing Feed">
+                    <img src="/video_feed" alt="Salon Video Processing Feed" id="video-stream">
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Right Side: Metrics & Dashboards -->
-        <div class="analytics-panel">
-            <!-- Entry and Barber KPIs -->
+        <section class="analytics-panel">
+            <!-- Entry, Barber, Load, and Turnaround KPIs -->
             <div class="kpi-row">
                 <div class="kpi-box entries">
-                    <span class="kpi-title">Total Entries</span>
+                    <span class="kpi-title">Total Client Entries</span>
                     <span class="kpi-val" id="entries-count">0</span>
                 </div>
                 <div class="kpi-box barbers">
                     <span class="kpi-title">Active Stylists</span>
                     <span class="kpi-val" id="barber-count">3</span>
+                </div>
+                <div class="kpi-box load">
+                    <span class="kpi-title">Salon Load Factor</span>
+                    <span class="kpi-val" id="load-factor">0%</span>
+                </div>
+                <div class="kpi-box turnaround">
+                    <span class="kpi-title">Turnaround Rate</span>
+                    <span class="kpi-val" id="turnaround-rate">0.0/hr</span>
                 </div>
             </div>
 
@@ -491,9 +86,10 @@
             <div class="card">
                 <div class="card-header" style="margin-bottom: 18px;">
                     <span class="card-title" style="font-size: 18px;">Styling Stations</span>
+                    <span class="card-subtitle">Custom Remarked Zones</span>
                 </div>
                 <div class="stations-list" id="stations-container">
-                    <!-- Updated dynamically -->
+                    <!-- Dynamically populated -->
                 </div>
             </div>
 
@@ -514,7 +110,7 @@
                     </div>
                 </div>
                 <div class="barber-grid" id="waiting-container">
-                    <!-- Queue items updated dynamically -->
+                    <!-- Queue cards dynamically populated -->
                 </div>
             </div>
 
@@ -524,7 +120,57 @@
                     <span class="card-title" style="font-size: 18px;">Stylist Activity Ledger</span>
                 </div>
                 <div class="barber-grid" id="barbers-container">
-                    <!-- Updated dynamically -->
+                    <!-- Stylist cards dynamically populated -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Zone Calibration & Renaming Modal -->
+    <div class="modal-overlay" id="calib-modal">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700;">Zone Calibration & Renaming Studio</h3>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                        Rename stations, add remarks, configure zone types, and draw bounding boxes directly over the footage.
+                    </p>
+                </div>
+                <button class="btn-luxury" onclick="closeCalibrationModal()">✖ Close</button>
+            </div>
+
+            <!-- Controls bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; background: #faf8f5; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border-salon);">
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-luxury" onclick="refreshCalibrationSnapshot()">📸 Refresh Snapshot</button>
+                    <button class="btn-luxury" id="btn-live-preview" onclick="toggleLivePreview()">▶ Live Stream Preview</button>
+                </div>
+                <button class="btn-luxury" style="border-color: var(--luxury-green); color: var(--luxury-green);" onclick="addNewZone()">
+                    ➕ Add New Zone
+                </button>
+            </div>
+
+            <div class="modal-grid">
+                <!-- Video Canvas -->
+                <div class="canvas-wrapper">
+                    <canvas id="calib-canvas" width="640" height="360"></canvas>
+                </div>
+
+                <!-- Zone Editor List -->
+                <div class="zone-editor-pane" id="zone-editor-list">
+                    <!-- Zone inputs dynamically populated -->
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #f0e6dd;">
+                <span style="font-size: 12px; color: var(--text-muted);">
+                    💡 <b>Tip:</b> Click any zone in the list to select it, then drag across the footage to map its chair.
+                </span>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn-luxury" onclick="closeCalibrationModal()">Cancel</button>
+                    <button class="btn-luxury primary" onclick="saveCalibrationZones()">
+                        💾 Save & Apply Changes
+                    </button>
                 </div>
             </div>
         </div>
@@ -534,127 +180,7 @@
         Salon Intelligence Hub &copy; 2026 | Powered by Computer Vision & Space Analytics PoC
     </footer>
 
-    <script>
-        function updateDashboard() {
-            fetch('/api/data')
-                .then(response => response.json())
-                .then(data => {
-                    // Update header totals
-                    document.getElementById('entries-count').innerText = data.total_entries;
-                    document.getElementById('barber-count').innerText = data.active_barbers_count;
-
-                    // Update styling stations list
-                    const stationsContainer = document.getElementById('stations-container');
-                    stationsContainer.innerHTML = '';
-
-                    Object.keys(data.chairs).forEach(cid => {
-                        const chair = data.chairs[cid];
-                        
-                        let dotClass = 'status-vacant';
-                        if (chair.status === 'Occupied') dotClass = 'status-occupied';
-                        if (chair.status === 'Claimed') dotClass = 'status-claimed';
-
-                        const durationStr = chair.status === 'Occupied' ? `${chair.current_duration}s` : '--';
-
-                        const stationRow = `
-                            <div class="station-row">
-                                <div class="station-info">
-                                    <div class="station-dot ${dotClass}"></div>
-                                    <div>
-                                        <div class="station-title">Station 0${cid}</div>
-                                        <div class="station-desc">${chair.status}</div>
-                                    </div>
-                                </div>
-                                <div class="station-stats">
-                                    <div class="stat-col">
-                                        <span class="stat-lbl">Active Time</span>
-                                        <span class="stat-val ${chair.status === 'Occupied' ? 'active-time' : ''}">${durationStr}</span>
-                                    </div>
-                                    <div class="stat-col">
-                                        <span class="stat-lbl">Avg Duration</span>
-                                        <span class="stat-val">${chair.average_duration}s</span>
-                                    </div>
-                                    <div class="stat-col">
-                                        <span class="stat-lbl">Clients</span>
-                                        <span class="stat-val">${chair.total_services}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        stationsContainer.insertAdjacentHTML('beforeend', stationRow);
-                    });
-
-                    // Update Waiting Lounge Registry
-                    document.getElementById('waiting-count').innerText = data.waiting.count;
-                    document.getElementById('waiting-avg').innerText = `${data.waiting.avg_wait_time}s`;
-
-                    const waitingContainer = document.getElementById('waiting-container');
-                    waitingContainer.innerHTML = '';
-
-                    if (data.waiting.queue.length === 0) {
-                        waitingContainer.innerHTML = '<p style="font-size: 11px; color: var(--text-muted); text-align: center; padding: 10px;">No clients currently waiting</p>';
-                    } else {
-                        data.waiting.queue.forEach(item => {
-                            const clientRow = `
-                                <div class="barber-card" style="border-color: rgba(191, 163, 124, 0.15); margin-bottom: 8px; padding: 12px 16px;">
-                                    <div class="barber-meta">
-                                        <div class="barber-pic" style="background: #efe4da; border-color: var(--accent-gold); width: 32px; height: 32px; font-size: 11px;">C</div>
-                                        <div class="barber-info">
-                                            <h4 style="font-size: 13px;">Client #${item.client_id}</h4>
-                                            <p style="font-size: 10px;">Waiting in lounge</p>
-                                        </div>
-                                    </div>
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <span class="barber-badge idle" style="background: rgba(191, 163, 124, 0.1); color: var(--accent-gold); border: 1px solid rgba(191, 163, 124, 0.15); font-size: 9px; padding: 3px 8px;">Waiting</span>
-                                        <span class="barber-clock" style="font-size: 13px;">${item.duration}s</span>
-                                    </div>
-                                </div>
-                            `;
-                            waitingContainer.insertAdjacentHTML('beforeend', clientRow);
-                        });
-                    }
-
-                    // Update Barber lists
-                    const barbersContainer = document.getElementById('barbers-container');
-                    barbersContainer.innerHTML = '';
-
-                    Object.keys(data.barbers).forEach(bid => {
-                        const barber = data.barbers[bid];
-                        const nameParts = barber.name.split(' ');
-                        const shortName = nameParts[0]; // Alex, Jordan, Taylor
-                        const statusClass = barber.status.toLowerCase();
-                        
-                        let taskDescription = 'Idle';
-                        if (barber.status === 'Servicing') {
-                            taskDescription = `Servicing Station 0${barber.current_chair}`;
-                        } else if (barber.status === 'Moving' || barber.status === 'Returning') {
-                            taskDescription = `Transit to Station 0${barber.current_chair || ''}`;
-                        }
-
-                        const barberCard = `
-                            <div class="barber-card">
-                                <div class="barber-meta">
-                                    <div class="barber-pic">${shortName[0]}</div>
-                                    <div class="barber-info">
-                                        <h4>${barber.name}</h4>
-                                        <p>${taskDescription}</p>
-                                    </div>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 20px;">
-                                    <span class="barber-badge ${statusClass}">${barber.status}</span>
-                                    <span class="barber-clock">${barber.total_service_time}s</span>
-                                </div>
-                            </div>
-                        `;
-                        barbersContainer.insertAdjacentHTML('beforeend', barberCard);
-                    });
-                })
-                .catch(error => console.error('Error fetching data:', error));
-        }
-
-        // Poll API every 500ms
-        setInterval(updateDashboard, 500);
-        updateDashboard();
-    </script>
+    <!-- Client Script -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}?v={{ range(1, 10000) | random }}"></script>
 </body>
 </html>
