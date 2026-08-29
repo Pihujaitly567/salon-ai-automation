@@ -408,7 +408,10 @@ class SalonTracker:
                 slot["missed"] = 0
                 slot["hits"] += 1
                 if cand["track_id"] is not None:
+                    if slot.get("track_id") != cand["track_id"]:
+                        slot["start_time"] = time.time()
                     slot["track_id"] = cand["track_id"]
+                    slot["display_id"] = cand["track_id"]
             else:
                 # Slot temporarily occluded by passing person: increment missed count
                 slot["missed"] += 1
@@ -492,7 +495,7 @@ class SalonTracker:
                 "duration": round(time.time() - s["start_time"], 1)
             }
             for slot_id, s in sorted(self.waiting_slots.items())
-            if s["hits"] >= 3 and s["missed"] <= config.WAITING_SLOT_ACTIVE_WINDOW
+            if s["hits"] >= 3
         ]
         all_waits = list(self.wait_durations)
         for item in waiting_queue:
