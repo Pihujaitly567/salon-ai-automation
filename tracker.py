@@ -171,6 +171,8 @@ class SalonTracker:
         self.next_slot_id = 1
         self.session_start = time.time()
         self.stylist_track_ids.clear()
+        self.barber_count_history.clear()
+        self.active_barbers_count = 0
 
     def process_frame(self, frame):
         self.sync_stations()
@@ -341,7 +343,7 @@ class SalonTracker:
         self.barber_count_history.append(detected_barbers)
         if len(self.barber_count_history) > 30:
             self.barber_count_history.pop(0)
-        self.active_barbers_count = max(1, int(round(np.mean(self.barber_count_history))))
+        self.active_barbers_count = min(max(1, len(self.stylist_track_ids)), len(self.stations_state))
 
         # Update styling station occupancy states
         staff_keys = list(self.staff_profiles.keys())
@@ -492,7 +494,10 @@ class SalonTracker:
             for slot_id, s in sorted(self.waiting_slots.items())
             if s["hits"] >= 3 and s["missed"] <= config.WAITING_SLOT_ACTIVE_WINDOW
         ]
-        avg_wait = np.mean(self.wait_durations) if self.wait_durations else 0.0
+        all_waits = list(self.wait_durations)
+        for item in waiting_queue:
+            all_waits.append(item["duration"])
+        avg_wait = np.mean(all_waits) if all_waits else 0.0
 
         # Load Factor
         total_chairs = len(self.stations_state)
