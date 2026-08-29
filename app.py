@@ -41,6 +41,7 @@ def video_processing_worker():
             ret, frame = cap.read()
             if not ret:
                 cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+                tracker.reset_state()
                 continue
 
             with frame_lock:

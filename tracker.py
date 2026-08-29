@@ -89,9 +89,38 @@ class SalonTracker:
 
     def get_active_zones(self):
         video_name = os.path.basename(self.current_video_file)
-        if video_name in self.zones_db:
-            return self.zones_db[video_name]
-        return self.zones_db.get("default", {})
+        import copy
+        zones = copy.deepcopy(self.zones_db.get(video_name, self.zones_db.get("default", {})))
+        
+        if video_name == "salon_video_1.mp4":
+            zones["station_1"] = {
+                "name": "Station 01 (Main Chair)",
+                "remarks": "Alex - Haircutting & Beard Styling",
+                "type": "service",
+                "x1": 100,
+                "x2": 380,
+                "y1": 180,
+                "y2": 360
+            }
+            zones["station_2"] = {
+                "name": "Station 02 (Styling Chair)",
+                "remarks": "Jordan - Blowdry & Coloring",
+                "type": "service",
+                "x1": 334,
+                "x2": 604,
+                "y1": 155,
+                "y2": 302
+            }
+            zones["waiting"] = {
+                "name": "Waiting Lounge Bench",
+                "remarks": "3-seater guest couch",
+                "type": "waiting",
+                "x1": 180,
+                "x2": 420,
+                "y1": 65,
+                "y2": 185
+            }
+        return zones
 
     def sync_stations(self):
         active_zones = self.get_active_zones()
