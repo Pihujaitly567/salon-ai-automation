@@ -5,6 +5,7 @@ import math
 import json
 import os
 from ultralytics import YOLO
+import mediapipe as mp
 import config
 
 def load_zones_database():
@@ -20,38 +21,78 @@ def save_zones_database(data):
     with open(config.ZONES_CONFIG_PATH, "w") as f:
         json.dump(data, f, indent=2)
 
-def classify_posture(keypoints, bbox):
+def classify_posture(frame, bbox, pose_model):
     """
-    Determines if a detected person is sitting (client) or standing (stylist).
-    Uses 17-point COCO skeleton joint geometry (shoulders, hips, knees) with aspect ratio fallback.
+    Determines if a detected person is sitting (client) or standing (stylist)
+    using Google MediaPipe Pose landmarks on cropped person boxes.
     """
     x1, y1, x2, y2 = bbox
     width = max(1, x2 - x1)
     height = max(1, y2 - y1)
     aspect_ratio = width / float(height)
 
+    # Fast aspect ratio check
     if aspect_ratio < 0.48:
         return "STANDING"
 
-    if keypoints is not None and len(keypoints) >= 17:
-        kpts = keypoints.cpu().numpy() if hasattr(keypoints, 'cpu') else np.array(keypoints)
-        # Shoulders (5, 6), Hips (11, 12), Knees (13, 14)
-        has_shoulders = kpts[5][2] > 0.3 and kpts[6][2] > 0.3
-        has_hips = kpts[11][2] > 0.3 and kpts[12][2] > 0.3
-        has_knees = kpts[13][2] > 0.3 and kpts[14][2] > 0.3
+    # Crop the person from the frame
+    pad = 5
+    px1 = max(0, x1 - pad)
+    py1 = max(0, y1 - pad)
+    px2 = min(frame.shape[1], x2 + pad)
+    py2 = min(frame.shape[0], y2 + pad)
+    crop = frame[py1:py2, px1:px2]
+    if crop.size == 0:
+        return "SITTING" if aspect_ratio > config.SITTING_ASPECT_RATIO_FALLBACK else "STANDING"
 
-        if has_shoulders and has_hips and has_knees:
-            shoulder_y = (kpts[5][1] + kpts[6][1]) / 2.0
-            hip_y = (kpts[11][1] + kpts[12][1]) / 2.0
-            knee_y = (kpts[13][1] + kpts[14][1]) / 2.0
+    crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+    results = pose_model.process(crop_rgb)
 
-            torso_height = abs(hip_y - shoulder_y)
-            thigh_height = abs(knee_y - hip_y)
+    if results.pose_landmarks:
+        landmarks = results.pose_landmarks.landmark
+        
+        # Landmarks: Shoulders (11, 12), Hips (23, 24), Knees (25, 26), Ankles (27, 28)
+        l_hip = landmarks[23]
+        r_hip = landmarks[24]
+        l_knee = landmarks[25]
+        r_knee = landmarks[26]
+        l_ankle = landmarks[27]
+        r_ankle = landmarks[28]
+        l_shoulder = landmarks[11]
+        r_shoulder = landmarks[12]
 
-            # When seated, thighs are horizontal, reducing vertical hip-to-knee delta
-            if thigh_height < 0.65 * torso_height or aspect_ratio > 0.58:
+        l_visible = l_hip.visibility > 0.3 and l_knee.visibility > 0.3 and l_ankle.visibility > 0.3
+        r_visible = r_hip.visibility > 0.3 and r_knee.visibility > 0.3 and r_ankle.visibility > 0.3
+
+        def get_angle(pt1, pt2, pt3):
+            # pt2 is the vertex of the angle
+            a = np.array([pt1.x, pt1.y])
+            b = np.array([pt2.x, pt2.y])
+            c = np.array([pt3.x, pt3.y])
+            ba = a - b
+            bc = c - b
+            cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc) + 1e-6)
+            angle = np.arccos(np.clip(cosine_angle, -1.0, 1.0))
+            return np.degrees(angle)
+
+        angles = []
+        if l_visible:
+            l_hip_angle = get_angle(l_shoulder, l_hip, l_knee)
+            l_knee_angle = get_angle(l_hip, l_knee, l_ankle)
+            angles.append((l_hip_angle, l_knee_angle))
+        if r_visible:
+            r_hip_angle = get_angle(r_shoulder, r_hip, r_knee)
+            r_knee_angle = get_angle(r_hip, r_knee, r_ankle)
+            angles.append((r_hip_angle, r_knee_angle))
+
+        if angles:
+            avg_hip = np.mean([a[0] for a in angles])
+            avg_knee = np.mean([a[1] for a in angles])
+            # Sitting angle is typically < 140 degrees
+            if avg_hip < 140.0 or avg_knee < 140.0:
                 return "SITTING"
-            return "STANDING"
+            else:
+                return "STANDING"
 
     return "SITTING" if aspect_ratio > config.SITTING_ASPECT_RATIO_FALLBACK else "STANDING"
 
@@ -61,6 +102,18 @@ class SalonTracker:
         print("Initializing YOLOv8-Pose model...")
         self.model = YOLO(config.MODEL_PATH)
         print("Model initialized successfully.")
+        
+        # Initialize Google MediaPipe Pose
+        print("Initializing MediaPipe Pose...")
+        self.mp_pose = mp.solutions.pose
+        self.pose = self.mp_pose.Pose(
+            static_image_mode=False,
+            model_complexity=1,
+            enable_segmentation=False,
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5
+        )
+        print("MediaPipe Pose initialized successfully.")
 
         self.zones_db = load_zones_database()
         self.current_video_file = config.DEFAULT_VIDEO
@@ -195,7 +248,7 @@ class SalonTracker:
                     track_id = int(box.id[0]) if box.id is not None else None
                     kpts = keypoints_data[i].data[0] if keypoints_data is not None and len(keypoints_data) > i else None
 
-                    posture = classify_posture(kpts, (x1, y1, x2, y2))
+                    posture = classify_posture(frame, (x1, y1, x2, y2), self.pose)
                     cx = int((x1 + x2) / 2)
                     cy = int((y1 + y2) / 2)
 
@@ -413,13 +466,26 @@ class SalonTracker:
                     slot["track_id"] = cand["track_id"]
                     slot["display_id"] = cand["track_id"]
             else:
-                # Slot temporarily occluded by passing person: increment missed count
-                slot["missed"] += 1
-                if slot["missed"] >= config.WAITING_SLOT_DROP_FRAMES:
-                    dur = time.time() - slot["start_time"]
-                    if dur >= 4.0:
-                        self.wait_durations.append(dur)
-                    del self.waiting_slots[slot_id]
+                # Check if this slot is currently occluded by a standing stylist
+                is_occluded = False
+                for det in detections:
+                    if det["assigned_role"] == "Stylist" or det["posture"] == "STANDING":
+                        dx = abs(det["cx"] - slot["cx"])
+                        # If a stylist stands close horizontally and covers the slot's vertical level
+                        if dx < 60 and det["y1"] <= slot["cy"] + 20 and det["y2"] >= slot["cy"] - 20:
+                            is_occluded = True
+                            break
+                            
+                if is_occluded:
+                    slot["missed"] = 0  # Reset missed frames to hold the slot active during occlusion
+                else:
+                    # Slot temporarily occluded by passing person: increment missed count
+                    slot["missed"] += 1
+                    if slot["missed"] >= config.WAITING_SLOT_DROP_FRAMES:
+                        dur = time.time() - slot["start_time"]
+                        if dur >= 4.0:
+                            self.wait_durations.append(dur)
+                        del self.waiting_slots[slot_id]
 
         # Step 2: Initialize new slots for unmatched sitting candidates
         for idx, cand in enumerate(waiting_candidates):
