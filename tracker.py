@@ -323,8 +323,8 @@ class SalonTracker:
             elif len(zone_dets) == 1:
                 det = zone_dets[0]
                 if det["assigned_role"] == "Stylist":
-                    # Stylist is alone in the service zone, station remains vacant
-                    pass
+                    # Stylist is actively working in the service zone (client may be occluded)
+                    detected_service_zones.add(zid)
                 else:
                     if det["posture"] == "SITTING":
                         det["assigned_role"] = "Client"
@@ -333,6 +333,7 @@ class SalonTracker:
                         det["assigned_role"] = "Stylist"
                         if det["track_id"] is not None:
                             self.stylist_track_ids.add(det["track_id"])
+                        detected_service_zones.add(zid)
 
         # Process final roles and draw bounding boxes
         for det in detections:
