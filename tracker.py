@@ -462,8 +462,6 @@ class SalonTracker:
                 slot["missed"] = 0
                 slot["hits"] += 1
                 if cand["track_id"] is not None:
-                    if slot.get("track_id") != cand["track_id"]:
-                        slot["start_time"] = time.time()
                     slot["track_id"] = cand["track_id"]
                     slot["display_id"] = cand["track_id"]
             else:
