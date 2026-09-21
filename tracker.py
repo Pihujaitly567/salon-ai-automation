@@ -115,6 +115,47 @@ class SalonTracker:
         )
         print("MediaPipe Pose initialized successfully.")
 
+        # Initialize OpenCV YuNet & SFace Facial Recognition
+        print("Initializing OpenCV YuNet & SFace Facial Recognition...")
+        self.yunet = cv2.FaceDetectorYN.create(
+            model=config.YUNET_MODEL_PATH,
+            config='',
+            input_size=(320, 320),
+            score_threshold=0.5,
+            nms_threshold=0.3
+        )
+        self.sface = cv2.FaceRecognizerSF.create(
+            model=config.SFACE_MODEL_PATH,
+            config=''
+        )
+
+        self.alex_feat = None
+        self.jordan_feat = None
+
+        crops_dir = os.path.join(os.path.dirname(__file__), "static", "crops")
+        alex_crop_path = os.path.join(crops_dir, "alex_ref.jpg")
+        jordan_crop_path = os.path.join(crops_dir, "jordan_ref.jpg")
+
+        if os.path.exists(alex_crop_path):
+            alex_img = cv2.imread(alex_crop_path)
+            if alex_img is not None:
+                self.yunet.setInputSize((alex_img.shape[1], alex_img.shape[0]))
+                faces = self.yunet.detect(alex_img)[1]
+                if faces is not None and len(faces) > 0:
+                    aligned = self.sface.alignCrop(alex_img, faces[0])
+                    self.alex_feat = self.sface.feature(aligned)
+
+        if os.path.exists(jordan_crop_path):
+            jordan_img = cv2.imread(jordan_crop_path)
+            if jordan_img is not None:
+                self.yunet.setInputSize((jordan_img.shape[1], jordan_img.shape[0]))
+                faces = self.yunet.detect(jordan_img)[1]
+                if faces is not None and len(faces) > 0:
+                    aligned = self.sface.alignCrop(jordan_img, faces[0])
+                    self.jordan_feat = self.sface.feature(aligned)
+
+        print("Facial Recognition embeddings pre-computed successfully.")
+
         self.zones_db = load_zones_database()
         self.current_video_file = config.DEFAULT_VIDEO
 
@@ -252,6 +293,29 @@ class SalonTracker:
                     cx = int((x1 + x2) / 2)
                     cy = int((y1 + y2) / 2)
 
+                    # Real-time Facial Recognition using YuNet + SFace
+                    face_name = None
+                    face_match = None
+                    if posture == "STANDING" or y1 < 250:
+                        head_h = max(25, int((y2 - y1) * 0.45))
+                        head_crop = frame[max(0, y1):min(frame.shape[0], y1 + head_h), max(0, x1):min(frame.shape[1], x2)]
+                        if head_crop.size > 0:
+                            self.yunet.setInputSize((head_crop.shape[1], head_crop.shape[0]))
+                            faces = self.yunet.detect(head_crop)[1]
+                            if faces is not None and len(faces) > 0:
+                                aligned = self.sface.alignCrop(head_crop, faces[0])
+                                feat = self.sface.feature(aligned)
+                                alex_sim = self.sface.match(feat, self.alex_feat, cv2.FaceRecognizerSF_FR_COSINE) if self.alex_feat is not None else 0
+                                jordan_sim = self.sface.match(feat, self.jordan_feat, cv2.FaceRecognizerSF_FR_COSINE) if self.jordan_feat is not None else 0
+                                max_sim = max(alex_sim, jordan_sim)
+                                if max_sim > 0.35:
+                                    if alex_sim > jordan_sim:
+                                        face_name = "Alex (Senior Barber)"
+                                        face_match = round(alex_sim * 100, 1)
+                                    else:
+                                        face_name = "Jordan (Stylist)"
+                                        face_match = round(jordan_sim * 100, 1)
+
                     detections.append({
                         "box_idx": i,
                         "x1": x1, "y1": y1, "x2": x2, "y2": y2,
@@ -259,7 +323,9 @@ class SalonTracker:
                         "track_id": track_id,
                         "kpts": kpts,
                         "posture": posture,
-                        "assigned_role": None
+                        "face_name": face_name,
+                        "face_match": face_match,
+                        "assigned_role": "Stylist" if face_name else None
                     })
 
         # Step 1: Pre-assign roles for known locked stylists
@@ -377,12 +443,16 @@ class SalonTracker:
                     self.tracked_people.add(track_id)
                     self.total_entries = len(self.tracked_people)
 
-            # Draw bounding box & posture label
+            # Draw bounding box & posture / facial recognition label
             badge_color = (200, 160, 120) if role == "Client" else (180, 140, 160)
-            role_text = f"Client #{track_id} [Sitting]" if (role == "Client" and track_id) else (
-                "Client [Sitting]" if role == "Client" else "Stylist [Standing]"
-            )
-            cv2.rectangle(frame, (x1, y1), (x2, y2), badge_color, 1)
+            if det.get("face_name"):
+                badge_color = (100, 230, 120)  # Bright green highlight for face recognition
+                role_text = f"{det['face_name']} [{det['face_match']}% Match]"
+            else:
+                role_text = f"Client #{track_id} [Sitting]" if (role == "Client" and track_id) else (
+                    "Client [Sitting]" if role == "Client" else "Stylist [Standing]"
+                )
+            cv2.rectangle(frame, (x1, y1), (x2, y2), badge_color, 2 if det.get("face_name") else 1)
             cv2.putText(frame, role_text, (x1, y1 - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.42, badge_color, 1)
 
             # Draw keypoint dots
@@ -545,13 +615,28 @@ class SalonTracker:
             }
 
         barbers_data = {}
+        staff_meta = {
+            1: {"station": "Station 01 (Main Chair)", "specialization": "Haircutting & Beard Styling", "avatar": "/static/crops/alex_ref.jpg"},
+            2: {"station": "Station 02 (Styling Chair)", "specialization": "Blowdry & Coloring", "avatar": "/static/crops/jordan_ref.jpg"},
+            3: {"station": "Station 03 (Color Chair)", "specialization": "Highlights & Treatment", "avatar": "/static/crops/alex_ref.jpg"}
+        }
         for bid, b in self.staff_profiles.items():
             current_service_dur = (time.time() - b["service_start"]) if (b["status"] == "Servicing" and b["service_start"]) else 0.0
+            smeta = staff_meta.get(bid, {})
+            st_key = f"station_{bid}"
+            clients_count = len(self.stations_state[st_key]["durations"]) if st_key in self.stations_state else 0
+
             barbers_data[bid] = {
+                "id": bid,
                 "name": b["name"],
                 "status": b["status"],
                 "current_chair": b["current_chair"],
-                "total_service_time": round(b["total_service_time"] + current_service_dur, 1)
+                "station_name": smeta.get("station", "Styling Station"),
+                "specialization": smeta.get("specialization", "Stylist"),
+                "avatar": smeta.get("avatar", ""),
+                "current_duration": round(current_service_dur, 1),
+                "total_service_time": round(b["total_service_time"] + current_service_dur, 1),
+                "total_clients": clients_count
             }
 
         waiting_queue = [

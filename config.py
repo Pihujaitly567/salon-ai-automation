@@ -6,6 +6,8 @@ PORT = int(os.environ.get("FLASK_PORT", 5004))
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "videos")
 ZONES_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "zones_config.json")
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "yolov8n-pose.pt")
+YUNET_MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "face_detection_yunet_2023mar.onnx")
+SFACE_MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "face_recognition_sface_2021dec.onnx")
 
 DEFAULT_VIDEO = os.path.join(UPLOAD_FOLDER, "salon_video_1.mp4")
 

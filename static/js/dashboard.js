@@ -139,21 +139,29 @@ function renderStylists(barbers) {
     Object.keys(barbers).forEach(bid => {
         const barber = barbers[bid];
         const initial = barber.name.charAt(0);
-        const statusClass = barber.status.toLowerCase();
-        const taskDesc = barber.status === 'Servicing' ? 'Servicing Client' : 'Idle';
+        const isServicing = barber.status === 'Servicing';
+        const statusClass = isServicing ? 'servicing' : 'idle';
+        const statusText = isServicing ? 'Servicing Client' : 'Idle / Between Clients';
+        const avatarHtml = barber.avatar ? 
+            `<img src="${barber.avatar}" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold);" alt="${barber.name}">` :
+            `<div class="barber-pic">${initial}</div>`;
 
         const card = `
-            <div class="barber-card">
-                <div class="barber-meta">
-                    <div class="barber-pic">${initial}</div>
+            <div class="barber-card" style="padding: 14px 18px; margin-bottom: 12px; border-radius: 12px; background: #ffffff; border: 1px solid var(--border-salon); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                <div class="barber-meta" style="display: flex; align-items: center; gap: 14px;">
+                    ${avatarHtml}
                     <div class="barber-info">
-                        <h4>${barber.name}</h4>
-                        <p>${taskDesc}</p>
+                        <h4 style="font-size: 15px; font-weight: 700; color: var(--text-dark); margin: 0 0 2px 0;">${barber.name}</h4>
+                        <p style="font-size: 11px; font-weight: 600; color: var(--accent-gold); margin: 0 0 3px 0;">📍 ${barber.station_name || 'Styling Station'} • <span style="color: #666;">${barber.specialization || 'Senior Stylist'}</span></p>
+                        <p style="font-size: 11px; color: var(--text-muted); margin: 0;">⚡ Status: <strong style="color: ${isServicing ? 'var(--luxury-green)' : '#999'};">${statusText}</strong> ${isServicing ? `(${barber.current_duration}s active)` : ''}</p>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <span class="barber-badge ${statusClass}">${barber.status}</span>
-                    <span class="barber-clock">${barber.total_service_time}s</span>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                    <span class="barber-badge ${statusClass}" style="font-size: 10px; padding: 4px 10px; text-transform: uppercase;">${barber.status}</span>
+                    <div style="font-size: 11px; color: var(--text-muted); text-align: right;">
+                        <div>Total Time: <strong style="color: var(--text-dark);">${barber.total_service_time}s</strong></div>
+                        <div>Served: <strong style="color: var(--text-dark);">${barber.total_clients || 0} clients</strong></div>
+                    </div>
                 </div>
             </div>
         `;
