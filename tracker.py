@@ -168,8 +168,7 @@ class SalonTracker:
 
         self.staff_profiles = {
             1: {"name": "Alex (Senior Barber)", "status": "Idle", "current_chair": None, "service_start": None, "total_service_time": 0.0},
-            2: {"name": "Jordan (Stylist)", "status": "Idle", "current_chair": None, "service_start": None, "total_service_time": 0.0},
-            3: {"name": "Taylor (Color Specialist)", "status": "Idle", "current_chair": None, "service_start": None, "total_service_time": 0.0}
+            2: {"name": "Jordan (Stylist)", "status": "Idle", "current_chair": None, "service_start": None, "total_service_time": 0.0}
         }
 
         self.show_skeletons = True
@@ -617,8 +616,7 @@ class SalonTracker:
         barbers_data = {}
         staff_meta = {
             1: {"station": "Station 01 (Main Chair)", "specialization": "Haircutting & Beard Styling", "avatar": "/static/crops/alex_ref.jpg"},
-            2: {"station": "Station 02 (Styling Chair)", "specialization": "Blowdry & Coloring", "avatar": "/static/crops/jordan_ref.jpg"},
-            3: {"station": "Station 03 (Color Chair)", "specialization": "Highlights & Treatment", "avatar": "/static/crops/alex_ref.jpg"}
+            2: {"station": "Station 02 (Styling Chair)", "specialization": "Blowdry & Coloring", "avatar": "/static/crops/jordan_ref.jpg"}
         }
         for bid, b in self.staff_profiles.items():
             current_service_dur = (time.time() - b["service_start"]) if (b["status"] == "Servicing" and b["service_start"]) else 0.0
