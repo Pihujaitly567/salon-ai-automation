@@ -2,7 +2,7 @@ import os
 
 # Server & storage settings
 HOST = os.environ.get("FLASK_HOST", "0.0.0.0")
-PORT = int(os.environ.get("FLASK_PORT", 5004))
+PORT = int(os.environ.get("PORT", os.environ.get("FLASK_PORT", 5004)))
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "videos")
 ZONES_CONFIG_PATH = os.path.join(os.path.dirname(__file__), "zones_config.json")
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "yolov8n-pose.pt")
