@@ -2,6 +2,7 @@ import cv2
 import time
 import os
 import threading
+import numpy as np
 from flask import Flask, render_template, Response, jsonify, request
 from werkzeug.utils import secure_filename
 
@@ -19,6 +20,13 @@ latest_frame = None
 latest_clean_frame = None
 frame_lock = threading.Lock()
 video_reload_flag = False
+
+# Create initial placeholder JPEG frame buffer
+placeholder_img = np.zeros((600, 800, 3), dtype=np.uint8)
+cv2.putText(placeholder_img, "Initializing AI Tracking Stream...", (160, 300),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
+_, placeholder_buf = cv2.imencode('.jpg', placeholder_img)
+PLACEHOLDER_FRAME_BYTES = placeholder_buf.tobytes()
 
 
 def video_processing_worker():
@@ -72,6 +80,9 @@ def ensure_worker_started():
                 w = threading.Thread(target=video_processing_worker, daemon=True)
                 w.start()
 
+# Start background worker immediately on import
+ensure_worker_started()
+
 @app.before_request
 def start_worker_on_request():
     ensure_worker_started()
@@ -83,12 +94,18 @@ def index():
 
 @app.route('/video_feed')
 def video_feed():
+    ensure_worker_started()
     def frame_generator():
         while True:
+            current_bytes = None
             with frame_lock:
-                if latest_frame is not None:
-                    yield (b'--frame\r\n'
-                           b'Content-Type: image/jpeg\r\n\r\n' + latest_frame + b'\r\n')
+                current_bytes = latest_frame
+
+            if current_bytes is None:
+                current_bytes = PLACEHOLDER_FRAME_BYTES
+
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + current_bytes + b'\r\n')
             time.sleep(0.04)
 
     return Response(frame_generator(), mimetype='multipart/x-mixed-replace; boundary=frame')

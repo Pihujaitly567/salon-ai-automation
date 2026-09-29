@@ -1,9 +1,11 @@
 *.mp4
 !videos/salon_video_1.mp4
 *.pt
+!yolov8n-pose.pt
 .DS_Store
 __pycache__/
 .pytest_cache/
 *.pyc
 *.onnx
-models/
+!models/*.onnx
+

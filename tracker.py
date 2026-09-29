@@ -103,6 +103,15 @@ def classify_posture(frame, bbox, pose_model):
 class SalonTracker:
     def __init__(self):
         print("Initializing YOLOv8-Pose model...")
+        if not os.path.exists(config.MODEL_PATH) or os.path.getsize(config.MODEL_PATH) < 1000:
+            print("Downloading YOLOv8-Pose weights...")
+            try:
+                import urllib.request, ssl
+                ssl_context = ssl._create_unverified_context()
+                url = "https://github.com/ultralytics/assets/releases/download/v8.2.0/yolov8n-pose.pt"
+                urllib.request.urlretrieve(url, config.MODEL_PATH, context=ssl_context)
+            except Exception as e_dl:
+                print(f"Warning: YOLO auto-download failed: {e_dl}")
         self.model = YOLO(config.MODEL_PATH)
         print("Model initialized successfully.")
         
