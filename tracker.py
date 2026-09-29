@@ -134,46 +134,71 @@ class SalonTracker:
             except Exception as e2:
                 print(f"Warning: MediaPipe Pose initialization fallback to aspect-ratio ({e2})")
 
-        # Initialize OpenCV YuNet & SFace Facial Recognition
+        # Initialize OpenCV YuNet & SFace Facial Recognition safely
         print("Initializing OpenCV YuNet & SFace Facial Recognition...")
-        self.yunet = cv2.FaceDetectorYN.create(
-            model=config.YUNET_MODEL_PATH,
-            config='',
-            input_size=(320, 320),
-            score_threshold=0.5,
-            nms_threshold=0.3
-        )
-        self.sface = cv2.FaceRecognizerSF.create(
-            model=config.SFACE_MODEL_PATH,
-            config=''
-        )
-
+        self.yunet = None
+        self.sface = None
         self.alex_feat = None
         self.jordan_feat = None
 
-        crops_dir = os.path.join(os.path.dirname(__file__), "static", "crops")
-        alex_crop_path = os.path.join(crops_dir, "alex_ref.jpg")
-        jordan_crop_path = os.path.join(crops_dir, "jordan_ref.jpg")
+        try:
+            models_dir = os.path.join(os.path.dirname(__file__), "models")
+            os.makedirs(models_dir, exist_ok=True)
+            
+            yunet_path = config.YUNET_MODEL_PATH
+            sface_path = config.SFACE_MODEL_PATH
 
-        if os.path.exists(alex_crop_path):
-            alex_img = cv2.imread(alex_crop_path)
-            if alex_img is not None:
-                self.yunet.setInputSize((alex_img.shape[1], alex_img.shape[0]))
-                faces = self.yunet.detect(alex_img)[1]
-                if faces is not None and len(faces) > 0:
-                    aligned = self.sface.alignCrop(alex_img, faces[0])
-                    self.alex_feat = self.sface.feature(aligned)
+            # Auto-download ONNX models if missing on cloud server
+            import urllib.request, ssl
+            ssl_context = ssl._create_unverified_context()
 
-        if os.path.exists(jordan_crop_path):
-            jordan_img = cv2.imread(jordan_crop_path)
-            if jordan_img is not None:
-                self.yunet.setInputSize((jordan_img.shape[1], jordan_img.shape[0]))
-                faces = self.yunet.detect(jordan_img)[1]
-                if faces is not None and len(faces) > 0:
-                    aligned = self.sface.alignCrop(jordan_img, faces[0])
-                    self.jordan_feat = self.sface.feature(aligned)
+            if not os.path.exists(yunet_path) or os.path.getsize(yunet_path) < 1000:
+                print("Downloading YuNet ONNX model...")
+                url = "https://raw.githubusercontent.com/opencv/opencv_zoo/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
+                urllib.request.urlretrieve(url, yunet_path)
 
-        print("Facial Recognition embeddings pre-computed successfully.")
+            if not os.path.exists(sface_path) or os.path.getsize(sface_path) < 1000:
+                print("Downloading SFace ONNX model...")
+                url = "https://raw.githubusercontent.com/opencv/opencv_zoo/main/models/face_recognition_sface/face_recognition_sface_2021dec.onnx"
+                urllib.request.urlretrieve(url, sface_path)
+
+            self.yunet = cv2.FaceDetectorYN.create(
+                model=yunet_path,
+                config='',
+                input_size=(320, 320),
+                score_threshold=0.5,
+                nms_threshold=0.3
+            )
+            self.sface = cv2.FaceRecognizerSF.create(
+                model=sface_path,
+                config=''
+            )
+
+            crops_dir = os.path.join(os.path.dirname(__file__), "static", "crops")
+            alex_crop_path = os.path.join(crops_dir, "alex_ref.jpg")
+            jordan_crop_path = os.path.join(crops_dir, "jordan_ref.jpg")
+
+            if os.path.exists(alex_crop_path):
+                alex_img = cv2.imread(alex_crop_path)
+                if alex_img is not None:
+                    self.yunet.setInputSize((alex_img.shape[1], alex_img.shape[0]))
+                    faces = self.yunet.detect(alex_img)[1]
+                    if faces is not None and len(faces) > 0:
+                        aligned = self.sface.alignCrop(alex_img, faces[0])
+                        self.alex_feat = self.sface.feature(aligned)
+
+            if os.path.exists(jordan_crop_path):
+                jordan_img = cv2.imread(jordan_crop_path)
+                if jordan_img is not None:
+                    self.yunet.setInputSize((jordan_img.shape[1], jordan_img.shape[0]))
+                    faces = self.yunet.detect(jordan_img)[1]
+                    if faces is not None and len(faces) > 0:
+                        aligned = self.sface.alignCrop(jordan_img, faces[0])
+                        self.jordan_feat = self.sface.feature(aligned)
+
+            print("Facial Recognition embeddings pre-computed successfully.")
+        except Exception as e_fr:
+            print(f"Warning: Facial recognition initialization fallback ({e_fr})")
 
         self.zones_db = load_zones_database()
         self.current_video_file = config.DEFAULT_VIDEO
@@ -314,7 +339,7 @@ class SalonTracker:
                     # Real-time Facial Recognition using YuNet + SFace
                     face_name = None
                     face_match = None
-                    if posture == "STANDING" or y1 < 250:
+                    if (posture == "STANDING" or y1 < 250) and self.yunet is not None and self.sface is not None:
                         head_h = max(25, int((y2 - y1) * 0.45))
                         head_crop = frame[max(0, y1):min(frame.shape[0], y1 + head_h), max(0, x1):min(frame.shape[1], x2)]
                         if head_crop.size > 0:
