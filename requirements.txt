@@ -1,0 +1,7 @@
+flask>=3.0.0
+opencv-contrib-python>=4.8.0
+ultralytics>=8.0.0
+mediapipe==0.10.14
+numpy>=1.24.0
+protobuf>=4.25.3
+gunicorn>=21.2.0
