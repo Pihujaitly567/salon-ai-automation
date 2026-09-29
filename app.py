@@ -60,9 +60,9 @@ def video_processing_worker():
         cap.release()
 
 
-# ----------------------------------------------------------------------
-# Routes & API Endpoints
-# ----------------------------------------------------------------------
+# Start background video processing worker thread automatically on module import
+worker = threading.Thread(target=video_processing_worker, daemon=True)
+worker.start()
 
 @app.route('/')
 def index():
@@ -168,7 +168,4 @@ def toggle_skeletons():
 
 
 if __name__ == '__main__':
-    worker = threading.Thread(target=video_processing_worker, daemon=True)
-    worker.start()
-
     app.run(host=config.HOST, port=config.PORT, debug=False)
