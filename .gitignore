@@ -1,5 +1,5 @@
-venv/
 *.mp4
+!videos/salon_video_1.mp4
 *.pt
 .DS_Store
 __pycache__/
