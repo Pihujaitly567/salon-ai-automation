@@ -60,9 +60,21 @@ def video_processing_worker():
         cap.release()
 
 
-# Start background video processing worker thread automatically on module import
-worker = threading.Thread(target=video_processing_worker, daemon=True)
-worker.start()
+worker_started = False
+worker_lock = threading.Lock()
+
+def ensure_worker_started():
+    global worker_started
+    if not worker_started:
+        with worker_lock:
+            if not worker_started:
+                worker_started = True
+                w = threading.Thread(target=video_processing_worker, daemon=True)
+                w.start()
+
+@app.before_request
+def start_worker_on_request():
+    ensure_worker_started()
 
 @app.route('/')
 def index():
