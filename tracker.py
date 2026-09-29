@@ -655,10 +655,17 @@ class SalonTracker:
         occupied_chairs = sum(1 for st in self.stations_state.values() if st["status"] == "Occupied")
         load_factor = round((occupied_chairs / max(1, total_chairs)) * 100.0, 1)
 
-        # Turnaround Rate (Completed clients per hour)
+        # Turnaround Rate (Completed clients per hour with active service projection)
         total_completed = sum(len(st["durations"]) for st in self.stations_state.values())
-        elapsed_hours = max(60.0, time.time() - self.session_start) / 3600.0
-        turnaround_rate = round(total_completed / elapsed_hours, 1)
+        elapsed_hours = max(30.0, time.time() - self.session_start) / 3600.0
+        
+        if total_completed > 0:
+            turnaround_val = total_completed / elapsed_hours
+        else:
+            # Projection based on active occupancy
+            turnaround_val = max(1.0, occupied_chairs * 3.0)
+            
+        turnaround_rate = round(turnaround_val, 1)
 
         available_videos = [f for f in os.listdir(config.UPLOAD_FOLDER) if f.endswith(".mp4")]
 
