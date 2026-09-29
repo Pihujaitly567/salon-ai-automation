@@ -42,11 +42,14 @@ def classify_posture(frame, bbox, pose_model):
     px2 = min(frame.shape[1], x2 + pad)
     py2 = min(frame.shape[0], y2 + pad)
     crop = frame[py1:py2, px1:px2]
-    if crop.size == 0:
+    if crop.size == 0 or pose_model is None:
         return "SITTING" if aspect_ratio > config.SITTING_ASPECT_RATIO_FALLBACK else "STANDING"
 
-    crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
-    results = pose_model.process(crop_rgb)
+    try:
+        crop_rgb = cv2.cvtColor(crop, cv2.COLOR_BGR2RGB)
+        results = pose_model.process(crop_rgb)
+    except Exception:
+        return "SITTING" if aspect_ratio > config.SITTING_ASPECT_RATIO_FALLBACK else "STANDING"
 
     if results.pose_landmarks:
         landmarks = results.pose_landmarks.landmark
@@ -103,17 +106,33 @@ class SalonTracker:
         self.model = YOLO(config.MODEL_PATH)
         print("Model initialized successfully.")
         
-        # Initialize Google MediaPipe Pose
+        # Initialize Google MediaPipe Pose safely
         print("Initializing MediaPipe Pose...")
-        self.mp_pose = mp.solutions.pose
-        self.pose = self.mp_pose.Pose(
-            static_image_mode=False,
-            model_complexity=1,
-            enable_segmentation=False,
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5
-        )
-        print("MediaPipe Pose initialized successfully.")
+        self.pose = None
+        try:
+            import mediapipe.python.solutions.pose as mp_pose_module
+            self.mp_pose = mp_pose_module
+            self.pose = self.mp_pose.Pose(
+                static_image_mode=False,
+                model_complexity=1,
+                enable_segmentation=False,
+                min_detection_confidence=0.5,
+                min_tracking_confidence=0.5
+            )
+            print("MediaPipe Pose initialized via python solutions successfully.")
+        except Exception as e1:
+            try:
+                self.mp_pose = mp.solutions.pose
+                self.pose = self.mp_pose.Pose(
+                    static_image_mode=False,
+                    model_complexity=1,
+                    enable_segmentation=False,
+                    min_detection_confidence=0.5,
+                    min_tracking_confidence=0.5
+                )
+                print("MediaPipe Pose initialized via mp.solutions successfully.")
+            except Exception as e2:
+                print(f"Warning: MediaPipe Pose initialization fallback to aspect-ratio ({e2})")
 
         # Initialize OpenCV YuNet & SFace Facial Recognition
         print("Initializing OpenCV YuNet & SFace Facial Recognition...")
