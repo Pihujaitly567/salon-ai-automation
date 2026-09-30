@@ -20,6 +20,7 @@ STATION_VACANT_STREAK = 375        # ~15 seconds tolerance for empty chair befor
 # Waiting Lounge Occlusion & Persistence Settings
 WAITING_SLOT_MAX_DISTANCE = 95.0
 WAITING_SLOT_MIN_SEPARATION = 75.0
-WAITING_SLOT_DROP_FRAMES = 1250     # ~50 seconds occlusion tolerance
-WAITING_SLOT_ACTIVE_WINDOW = 1000   # ~40 seconds live queue persistence
+WAITING_SLOT_DROP_FRAMES = 120      # ~4 seconds occlusion tolerance
+WAITING_SLOT_ACTIVE_WINDOW = 150    # ~5 seconds live queue persistence
+
 
