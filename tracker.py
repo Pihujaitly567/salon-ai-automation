@@ -261,10 +261,10 @@ class SalonTracker:
                 "name": "Waiting Lounge Bench",
                 "remarks": "3-seater guest couch",
                 "type": "waiting",
-                "x1": 180,
-                "x2": 320,
-                "y1": 60,
-                "y2": 175
+                "x1": 170,
+                "x2": 345,
+                "y1": 50,
+                "y2": 245
             }
         return zones
 
@@ -449,7 +449,7 @@ class SalonTracker:
             kpts = det["kpts"]
             role = det["assigned_role"]
 
-            # Check if detection is strictly inside waiting lounge bench area (top left couch: 180<=cx<=320, 60<=cy<=175)
+            # Check if detection is inside waiting lounge bench area (top left couch: 170<=cx<=345, 50<=cy<=245)
             is_in_waiting_zone = False
             for zid, zinfo in active_zones.items():
                 ztype = zinfo.get("type", "service" if "station" in zid or "chair" in zid else "waiting")
@@ -457,7 +457,12 @@ class SalonTracker:
                     zx1, zy1 = zinfo.get("x1", 0), zinfo.get("y1", 0)
                     zx2, zy2 = zinfo.get("x2", 0), zinfo.get("y2", 0)
 
-                    in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2)
+                    overlap_x = max(0, min(x2, zx2) - max(x1, zx1))
+                    overlap_y = max(0, min(y2, zy2) - max(y1, zy1))
+                    overlap_area = overlap_x * overlap_y
+                    box_area = max(1, (x2 - x1) * (y2 - y1))
+                    in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2) or (overlap_area / box_area > 0.15)
+
                     if in_zone and det.get("assigned_role") != "Stylist":
                         det["assigned_role"] = "Client"
                         det["posture"] = "SITTING"
