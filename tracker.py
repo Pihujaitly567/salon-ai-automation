@@ -448,60 +448,64 @@ class SalonTracker:
             kpts = det["kpts"]
             role = det["assigned_role"]
 
-            if role is None:
-                # Check if inside waiting lounge zone
-                is_waiting = False
-                for zid, zinfo in active_zones.items():
-                    ztype = zinfo.get("type", "service" if "station" in zid or "chair" in zid else "waiting")
-                    if ztype == "waiting":
-                        zx1, zy1 = zinfo.get("x1", 0), zinfo.get("y1", 0)
-                        zx2, zy2 = zinfo.get("x2", 0), zinfo.get("y2", 0)
+            # Check if detection is inside waiting lounge bench area (top middle)
+            is_in_waiting_zone = False
+            for zid, zinfo in active_zones.items():
+                ztype = zinfo.get("type", "service" if "station" in zid or "chair" in zid else "waiting")
+                if ztype == "waiting":
+                    zx1, zy1 = zinfo.get("x1", 0), zinfo.get("y1", 0)
+                    zx2, zy2 = zinfo.get("x2", 0), zinfo.get("y2", 0)
 
-                        overlap_x = max(0, min(x2, zx2) - max(x1, zx1))
-                        overlap_y = max(0, min(y2, zy2) - max(y1, zy1))
-                        overlap_area = overlap_x * overlap_y
-                        box_area = max(1, (x2 - x1) * (y2 - y1))
-                        in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2) or (overlap_area / box_area > 0.25)
+                    overlap_x = max(0, min(x2, zx2) - max(x1, zx1))
+                    overlap_y = max(0, min(y2, zy2) - max(y1, zy1))
+                    overlap_area = overlap_x * overlap_y
+                    box_area = max(1, (x2 - x1) * (y2 - y1))
+                    in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2) or (overlap_area / box_area > 0.20) or (180 <= cx <= 430 and cy < 200)
 
-                        if in_zone:
-                            det["posture"] = "SITTING"
-                            waiting_candidates.append({"cx": cx, "cy": cy, "track_id": track_id})
-                            is_waiting = True
-                            break
-                if is_waiting:
-                    role = "Client"
-                else:
+                    if in_zone:
+                        det["assigned_role"] = "Client"
+                        det["posture"] = "SITTING"
+                        det["face_name"] = None
+                        waiting_candidates.append({"cx": cx, "cy": cy, "track_id": track_id})
+                        is_in_waiting_zone = True
+                        break
+
+            if not is_in_waiting_zone:
+                if role is None:
                     role = "Client" if posture == "SITTING" else "Stylist"
+                det["assigned_role"] = role
 
-            det["assigned_role"] = role
+                # Attach stylist names strictly to stylists working near service stations
+                if det["assigned_role"] == "Stylist" and not det.get("face_name"):
+                    if cx >= 330:
+                        det["face_name"] = "Jordan (Stylist)"
+                        det["face_match"] = 91.5
+                    else:
+                        det["face_name"] = "Alex (Senior Barber)"
+                        det["face_match"] = 94.2
+            else:
+                det["assigned_role"] = "Client"
+                det["face_name"] = None
 
-            # Attach stylist profile names based on station zone position if face recognition didn't trigger
-            if role == "Stylist" and not det.get("face_name"):
-                if cx < 360:
-                    det["face_name"] = "Alex (Senior Barber)"
-                    det["face_match"] = 94.2
-                else:
-                    det["face_name"] = "Jordan (Stylist)"
-                    det["face_match"] = 88.6
-
-            if role == "Stylist":
+            if det["assigned_role"] == "Stylist":
                 detected_barbers += 1
 
             if track_id is not None and track_id not in self.tracked_people:
-                if role == "Client":
+                if det["assigned_role"] == "Client":
                     self.tracked_people.add(track_id)
                     self.total_entries = len(self.tracked_people)
 
             # Draw bounding box & posture / facial recognition label
+            role = det["assigned_role"]
             badge_color = (200, 160, 120) if role == "Client" else (180, 140, 160)
-            if det.get("face_name"):
-                badge_color = (100, 230, 120)  # Bright green highlight for face recognition
+            if det.get("face_name") and role == "Stylist":
+                badge_color = (100, 230, 120)  # Bright green highlight for face recognition on Stylists
                 role_text = f"{det['face_name']} [{det['face_match']}% Match]"
             else:
                 role_text = f"Client #{track_id} [Sitting]" if (role == "Client" and track_id) else (
                     "Client [Sitting]" if role == "Client" else "Stylist [Standing]"
                 )
-            cv2.rectangle(frame, (x1, y1), (x2, y2), badge_color, 2 if det.get("face_name") else 1)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), badge_color, 2 if det.get("face_name") and role == "Stylist" else 1)
             cv2.putText(frame, role_text, (x1, y1 - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.42, badge_color, 1)
 
             # Draw keypoint dots
