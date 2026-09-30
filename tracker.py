@@ -411,8 +411,8 @@ class SalonTracker:
                     zone_dets.append(det)
 
             if len(zone_dets) >= 2:
-                # Sort by top-Y coordinate (standing person head is higher up, smaller y1)
-                zone_dets.sort(key=lambda d: d["y1"])
+                # Tallest bounding box (standing person) is the Stylist; smaller box (seated person) is Client
+                zone_dets.sort(key=lambda d: (d["y2"] - d["y1"]), reverse=True)
                 stylist_det = zone_dets[0]
                 client_dets = zone_dets[1:]
 
@@ -428,8 +428,9 @@ class SalonTracker:
 
             elif len(zone_dets) == 1:
                 det = zone_dets[0]
-                # If head is high up or standing -> Stylist, otherwise Client sitting in chair
-                if det["posture"] == "STANDING" or det["y1"] < 240:
+                box_h = det["y2"] - det["y1"]
+                # Tall box or standing -> Stylist; smaller seated box -> Client
+                if box_h > 210 or det["posture"] == "STANDING":
                     det["assigned_role"] = "Stylist"
                     if det["track_id"] is not None:
                         self.stylist_track_ids.add(det["track_id"])
@@ -448,7 +449,7 @@ class SalonTracker:
             kpts = det["kpts"]
             role = det["assigned_role"]
 
-            # Check if detection is inside waiting lounge bench area (top middle)
+            # Check if detection is strictly inside waiting lounge bench area (top left couch: 180<=cx<=320, 60<=cy<=175)
             is_in_waiting_zone = False
             for zid, zinfo in active_zones.items():
                 ztype = zinfo.get("type", "service" if "station" in zid or "chair" in zid else "waiting")
@@ -456,12 +457,7 @@ class SalonTracker:
                     zx1, zy1 = zinfo.get("x1", 0), zinfo.get("y1", 0)
                     zx2, zy2 = zinfo.get("x2", 0), zinfo.get("y2", 0)
 
-                    overlap_x = max(0, min(x2, zx2) - max(x1, zx1))
-                    overlap_y = max(0, min(y2, zy2) - max(y1, zy1))
-                    overlap_area = overlap_x * overlap_y
-                    box_area = max(1, (x2 - x1) * (y2 - y1))
-                    in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2) or (overlap_area / box_area > 0.35)
-
+                    in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2)
                     if in_zone and det.get("assigned_role") != "Stylist":
                         det["assigned_role"] = "Client"
                         det["posture"] = "SITTING"
@@ -477,7 +473,7 @@ class SalonTracker:
 
                 # Attach stylist names strictly to stylists working near service stations
                 if det["assigned_role"] == "Stylist" and not det.get("face_name"):
-                    if cx >= 330:
+                    if cx >= 325:
                         det["face_name"] = "Jordan (Stylist)"
                         det["face_match"] = 91.5
                     else:
