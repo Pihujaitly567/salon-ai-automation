@@ -243,28 +243,28 @@ class SalonTracker:
                 "name": "Station 01 (Main Chair)",
                 "remarks": "Alex - Haircutting & Beard Styling",
                 "type": "service",
-                "x1": 100,
-                "x2": 380,
+                "x1": 60,
+                "x2": 320,
                 "y1": 180,
-                "y2": 360
+                "y2": 550
             }
             zones["station_2"] = {
                 "name": "Station 02 (Styling Chair)",
                 "remarks": "Jordan - Blowdry & Coloring",
                 "type": "service",
-                "x1": 334,
-                "x2": 604,
-                "y1": 155,
-                "y2": 302
+                "x1": 325,
+                "x2": 640,
+                "y1": 150,
+                "y2": 550
             }
             zones["waiting"] = {
                 "name": "Waiting Lounge Bench",
                 "remarks": "3-seater guest couch",
                 "type": "waiting",
                 "x1": 180,
-                "x2": 420,
-                "y1": 65,
-                "y2": 185
+                "x2": 320,
+                "y1": 60,
+                "y2": 175
             }
         return zones
 
@@ -460,9 +460,9 @@ class SalonTracker:
                     overlap_y = max(0, min(y2, zy2) - max(y1, zy1))
                     overlap_area = overlap_x * overlap_y
                     box_area = max(1, (x2 - x1) * (y2 - y1))
-                    in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2) or (overlap_area / box_area > 0.20) or (180 <= cx <= 430 and cy < 200)
+                    in_zone = (zx1 <= cx <= zx2 and zy1 <= cy <= zy2) or (overlap_area / box_area > 0.35)
 
-                    if in_zone:
+                    if in_zone and det.get("assigned_role") != "Stylist":
                         det["assigned_role"] = "Client"
                         det["posture"] = "SITTING"
                         det["face_name"] = None
