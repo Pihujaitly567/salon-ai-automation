@@ -21,7 +21,8 @@ STATION_VACANT_STREAK = 375        # ~15 seconds tolerance for empty chair befor
 WAITING_SLOT_MAX_DISTANCE = 95.0
 WAITING_SLOT_MIN_SEPARATION = 55.0
 
-WAITING_SLOT_DROP_FRAMES = 120      # ~4 seconds occlusion tolerance
-WAITING_SLOT_ACTIVE_WINDOW = 150    # ~5 seconds live queue persistence
+WAITING_SLOT_DROP_FRAMES = 600      # ~20 seconds occlusion tolerance for passing stylists
+WAITING_SLOT_ACTIVE_WINDOW = 600    # ~20 seconds queue persistence
+
 
 
